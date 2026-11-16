@@ -15,6 +15,7 @@ Appli web personnelle de scan alimentaire (un seul utilisateur). Hébergée par 
 - `verif: 1` seulement si les règles de la fiche ont été vérifiées pendant la session sur au moins deux sources consultées, citées dans `sources` avec leur URL exacte. Sinon `verif: 0`.
 - Ne jamais inventer une URL ni un chiffre. Une affirmation sans source consultée ne rentre pas dans une fiche vérifiée.
 - Hiérarchie des preuves : avis d'agences (Anses, EFSA, DGCCRF), réglementation, puis tests concordants d'associations (Que Choisir, 60 Millions de consommateurs, Bloom, Foodwatch). Une étude isolée ou un article de presse seul ne change pas un verdict : au mieux une ligne dans `pieges` signalée comme « débattu ».
+- Les applis de scan et de notation (Open Food Facts, Yuka, QuelProduit, MyLabel, Siga) sont aussi des sources utilisables, choisies par l'utilisateur : leurs pages publiques (méthodologie, fiches additifs, critères de notation, blogs, données Open Food Facts) peuvent servir à enrichir les fiches, ajouter des pièges, des mots-clés ou de nouvelles familles, et comptent parmi les sources d'une fiche vérifiée. Citer l'URL exacte de la page consultée. Si une appli contredit une agence, garder l'avis de l'agence et signaler l'écart dans `pieges`.
 - Pas de verdict par marque : les fiches donnent des règles par type de produit.
 - Ne pas recopier le contenu de sites payants (dont derriere-les-etiquettes.fr). Reformuler à partir de sources publiques.
 - Ton des textes : français, phrases courtes, factuel, sans alarmisme.

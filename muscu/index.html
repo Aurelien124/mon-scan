@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#0e0f12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ma Muscu">
+<title>Ma Muscu</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main id="app"></main>
+
+<div id="timer">
+  <div class="row">
+    <div class="grow">
+      <div class="tiny mut" id="timer-label">Récupération</div>
+      <div class="t" id="timer-t">0:00</div>
+    </div>
+    <button class="btn sm" data-a="timer-add" data-v="-15">−15</button>
+    <button class="btn sm" data-a="timer-add" data-v="15">+15</button>
+    <button class="btn sm pri" data-a="timer-stop">Passer</button>
+  </div>
+  <div class="prog"><i id="timer-prog"></i></div>
+</div>
+
+<nav class="bar" id="nav">
+  <a href="#/" data-r="home"><span class="i">⌂</span>Accueil</a>
+  <a href="#/programmes" data-r="programmes"><span class="i">▤</span>Programmes</a>
+  <a href="#/seance" data-r="seance" id="nav-seance"><span class="i">◉</span>Séance</a>
+  <a href="#/historique" data-r="historique"><span class="i">↺</span>Historique</a>
+  <a href="#/exercices" data-r="exercices"><span class="i">📈</span>Progrès</a>
+</nav>
+
+<script src="data.js"></script>
+<script src="parser.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

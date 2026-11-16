@@ -7,6 +7,7 @@ Appli web personnelle de scan alimentaire (un seul utilisateur). Hébergée par 
 - `index.html` : l'appli (interface, scan, calcul de la note, moteur de détection). Ne pas y toucher pour une simple mise à jour de contenu.
 - `kb.js` : la base de connaissances (`KB`, une entrée par famille d'aliments) et le `JOURNAL` des mises à jour. C'est le fichier à faire évoluer.
 - `tests/check.js` : contrôle de cohérence de `kb.js`. À lancer avant tout commit : `node tests/check.js`.
+- `muscu/` : appli séparée « Ma Muscu » (suivi de musculation), en ligne sur https://aurelien124.github.io/mon-scan/muscu/. Sans lien avec Mon Scan : la mise à jour de la base de connaissances n'y touche pas.
 
 ## Règles pour modifier `kb.js`
 

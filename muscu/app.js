@@ -7,7 +7,7 @@
 // ---------- Stockage ----------
 const KEY = 'ma-muscu-v1';
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-const DEFAULT_SETTINGS = { inc: 2.5, rest: 90, bar: 20, plates: [25, 20, 15, 10, 5, 2.5, 1.25], sound: true, vibrate: true, autoTimer: true, wake: true, notif: false, goal: 2, iphoneTimer: /iPhone|iPad/.test(navigator.userAgent), shortcut: 'Récup Ma Muscu' };
+const DEFAULT_SETTINGS = { inc: 2.5, rest: 90, bar: 20, plates: [25, 20, 15, 10, 5, 2.5, 1.25], sound: true, vibrate: true, autoTimer: true, wake: true, notif: false, goal: 2, iphoneTimer: /iPhone|iPad/.test(navigator.userAgent), shortcut: 'MaMuscu' };
 
 let S = load();
 function load() {
@@ -20,6 +20,7 @@ function load() {
     }
   }
   d.settings = { ...DEFAULT_SETTINGS, ...(d.settings || {}) };
+  if (d.settings.shortcut === 'Récup Ma Muscu') d.settings.shortcut = 'MaMuscu';
   for (const [name, muscle, type, aliases] of SEED_EXERCISES) { // nouveaux exercices ajoutés à la bibliothèque
     if (!Object.values(d.exercises).some(e => e.name === name)) { const id = uid(); d.exercises[id] = { id, name, muscle, type, aliases, note: '' }; }
   }
@@ -615,13 +616,14 @@ function vSettings() {
     <h2>Minuteur de l'iPhone</h2>
     <div class="card" style="padding:4px 14px">${tg('iphoneTimer', 'Afficher le bouton 📱 dans le minuteur', 'Envoie la récup au minuteur natif : compte à rebours sur l\'écran verrouillé + alarme, même appli fermée')}</div>
     <details class="card"><summary><b>Mise en place (une seule fois, 1 min)</b></summary><ol class="small mut" style="padding-left:18px;line-height:1.6">
-      <li>Ouvre l'app <b>Raccourcis</b> → <b>+</b> (nouveau raccourci).</li>
-      <li>Nomme-le exactement : <b>${esc(st.shortcut)}</b></li>
-      <li>Ajoute l'action <b>Obtenir les nombres depuis l'entrée</b> (ou « Nombre ») et choisis <b>Entrée du raccourci</b>.</li>
-      <li>Ajoute l'action <b>Démarrer le minuteur</b> : durée = <b>Nombres</b>, unité <b>secondes</b>.</li>
-      <li>Dans les réglages du raccourci (ⓘ), active la réception de <b>Texte</b>.</li>
-      <li>Pendant la séance, touche 📱 dans le minuteur : l'iPhone lance son minuteur avec le temps restant. Reviens dans Ma Muscu d'un glissement.</li></ol>
-      <label class="f">Nom du raccourci</label><input type="text" value="${esc(st.shortcut)}" data-setting-s="shortcut"></details>
+      <li>Ouvre l'app <b>Raccourcis</b> → onglet <b>Raccourcis</b> → <b>+</b> en haut à droite.</li>
+      <li>Touche le nom en haut → <b>Renommer</b> → tape exactement <b style="color:var(--txt)">${esc(st.shortcut)}</b> (sans espace ni accent).</li>
+      <li>Touche <b>Ajouter une action</b>, cherche <b>Démarrer le minuteur</b> (app Horloge) et ajoute-la.</li>
+      <li>Dans l'action, touche la durée (« 30 ») → choisis la variable <b>Entrée du raccourci</b>. Touche « minutes » → choisis <b>secondes</b>.</li>
+      <li>Touche <b>OK</b>. C'est prêt : vérifie avec le bouton ci-dessous (il lance un minuteur de 10 s).</li></ol>
+      <button class="btn block" data-a="test-shortcut">Tester le raccourci (10 s)</button>
+      <p class="tiny dim">Si iOS dit « impossible de trouver le raccourci », le nom ne correspond pas : il doit être identique à celui-ci (majuscules comprises).</p>
+      <label class="f">Nom du raccourci</label><input type="text" value="${esc(st.shortcut)}" data-setting-s="shortcut" autocapitalize="off" autocorrect="off"></details>
     <h2>Sauvegarde</h2>
     <div class="card"><p class="small mut" style="margin-top:0">Tes données restent sur ce téléphone. Exporte une sauvegarde régulièrement (Fichiers, iCloud, OneDrive…) ; elle permet aussi de passer sur un autre appareil.${S.lastBackup ? `<br>Dernière sauvegarde : ${fmtDate(S.lastBackup)}` : ''}</p>
       <div class="row"><button class="btn pri grow" data-a="backup">Exporter</button><button class="btn grow" data-a="restore">Restaurer</button></div></div>
@@ -660,7 +662,10 @@ function sendToIphoneTimer() {
   if (!S.timer) return;
   const rem = Math.ceil((S.timer.end - Date.now()) / 1000);
   if (rem <= 2) return toast('Récup déjà terminée');
-  location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(S.settings.shortcut)}&input=text&text=${rem}`;
+  runShortcut(rem);
+}
+function runShortcut(sec) {
+  location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(S.settings.shortcut.trim().normalize('NFC'))}&input=text&text=${sec}`;
 }
 
 // ---------- Modales ----------
@@ -844,6 +849,7 @@ document.addEventListener('click', e => {
     case 'fiche': ficheModal(d.id); break;
     case 'session-fiches': sessionFichesModal(C.s.items.map(i => i.exId), C.s.name); break;
     case 'timer-iphone': sendToIphoneTimer(); break;
+    case 'test-shortcut': runShortcut(10); break;
     case 'start': startWorkout(d.p, d.w, d.s); break;
     case 'start-free': startWorkout(); break;
     case 'pick-session': {
@@ -936,7 +942,7 @@ document.addEventListener('change', e => {
     save(); return;
   }
   if (d.settingN) { const n = num(t.value); if (n != null && n > 0) S.settings[d.settingN] = n; save(); return; }
-  if (d.settingS) { S.settings[d.settingS] = t.value.trim() || DEFAULT_SETTINGS[d.settingS]; save(); return; }
+  if (d.settingS) { S.settings[d.settingS] = t.value.trim() || DEFAULT_SETTINGS[d.settingS]; save(); route(); return; }
   if ('settingPlates' in d) { const ps = t.value.split(/[\s;]+/).map(num).filter(x => x > 0); if (ps.length) S.settings.plates = ps; save(); }
 });
 // Valider la saisie avec "Entrée" sur le clavier

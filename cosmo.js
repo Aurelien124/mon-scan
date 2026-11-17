@@ -27,7 +27,15 @@ function variants(tok){
   return [...v];
 }
 
-function inciText(p){ return p.ingredients_text_fr || p.ingredients_text_en || p.ingredients_text || ""; }
+/* Indices d'une liste mal lue (photo floue) : caractères parasites, chiffres collés aux lettres, mots soudés. */
+function garbled(tok){ return /[?�|_~]/.test(tok) || /[a-z]\d[a-z]|\d[a-z]{3,}\d/.test(tok) || tok.split(" ").some(w=>w.length>24); }
+function inciQuality(txt){ const t = splitInci(txt); return {n:t.length, bad:t.filter(garbled).length}; }
+/* Choisit la meilleure liste disponible (français, anglais, générique) : la plus longue avec le moins de parasites. */
+function inciText(p){
+  const c = [p.ingredients_text_fr, p.ingredients_text_en, p.ingredients_text].filter(Boolean);
+  if(!c.length) return "";
+  return c.map(t=>({t, q:inciQuality(t)})).sort((a,b)=>(b.q.n-3*b.q.bad)-(a.q.n-3*a.q.bad))[0].t;
+}
 
 /* Repère les familles d'ingrédients. Renvoie la liste des correspondances, regroupées par famille. */
 function matchIngredients(p){
@@ -86,21 +94,26 @@ function analyseCosmetic(p, opts){
   const lftHits = o.lft ? hits.filter(h=>h.g.lft && h.g.lft[0]>0).sort((a,b)=>b.g.lft[0]-a.g.lft[0]||a.first-b.first) : [];
   const lftOk = o.lft ? hits.filter(h=>h.g.lft && h.g.lft[0]<0) : [];
   let score = null;
+  const nEvite = lftHits.filter(h=>h.g.lft[0]===2).length;
   if(toks.length){
     score = 100;
-    const interdit = offHits.some(h=>h.g.off[0]===3);
     score -= Math.min(30, 10*offHits.filter(h=>h.g.off[0]===2).length);
     score -= Math.min(10, 5*offHits.filter(h=>h.g.off[0]===1).length);
     if(o.lftScore){
-      score -= Math.min(45, 12*lftHits.filter(h=>h.g.lft[0]===2).length);
-      score -= Math.min(15, 4*lftHits.filter(h=>h.g.lft[0]===1).length);
+      /* Logique de La Famille Tortue : un seul ingrédient problématique suffit à sortir un produit du « clean ». */
+      score -= 15*nEvite;
+      score -= Math.min(20, 5*lftHits.filter(h=>h.g.lft[0]===1).length);
+      if(nEvite>=1) score = Math.min(score, 69);
+      if(nEvite>=2) score = Math.min(score, 49);
+      if(nEvite>=4) score = Math.min(score, 24);
     }
     score = Math.max(0, score);
-    if(interdit) score = Math.min(score, 10);
+    if(offHits.some(h=>h.g.off[0]===3)) score = Math.min(score, 10);
   }
-  return {toks, hits, offHits, lftHits, lftOk, score,
+  const bad = toks.filter(garbled);
+  return {toks, hits, offHits, lftHits, lftOk, score, nEvite, bad, doubtful: toks.length>0 && (bad.length>=2 || bad.length/toks.length>0.15),
           interdit: offHits.some(h=>h.g.off[0]===3),
           fam: findCFam(p), marque: lftBrand(p), produit: lftProduct(p)};
 }
 
-if(typeof module!=="undefined") module.exports = {cnorm, splitInci, variants, matchIngredients, findCFam, lftBrand, lftProduct, isPartner, analyseCosmetic};
+if(typeof module!=="undefined") module.exports = {cnorm, splitInci, garbled, inciText, variants, matchIngredients, findCFam, lftBrand, lftProduct, isPartner, analyseCosmetic};

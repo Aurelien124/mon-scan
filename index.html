@@ -237,7 +237,7 @@ section.view{display:flex;flex-direction:column;gap:16px}
         <li><b>Bio</b> : 100 si label bio, sinon 0.</li>
         <li>Un additif classé « à éviter » plafonne la note à 49.</li>
         <li>S'il manque une donnée, la note est calculée sur le reste et marquée « partielle ».</li>
-        <li><b>Cosmétiques et ménager</b> : départ à 100, moins 10 points par ingrédient restreint ou classé (30 au plus), moins 5 par ingrédient sous surveillance (10 au plus), moins 12 par ingrédient déconseillé par La Famille Tortue (45 au plus) et 4 par ingrédient « à limiter » (15 au plus). Un ingrédient interdit plafonne la note à 10.</li>
+        <li><b>Cosmétiques et ménager</b> : départ à 100, moins 10 points par ingrédient restreint ou classé (30 au plus), moins 5 par ingrédient sous surveillance (10 au plus), moins 15 par ingrédient déconseillé par La Famille Tortue et 5 par ingrédient « à limiter » (20 au plus). Comme pour elle, un seul ingrédient déconseillé suffit à sortir du « clean » : la note est plafonnée à 69 avec un ingrédient déconseillé, 49 avec deux, 24 avec quatre ou plus. Un ingrédient interdit plafonne la note à 10.</li>
       </ul>
       <p class="muted small">Le classement des additifs est une grille personnelle indicative, à ajuster. Ce n'est ni la grille de Yuka ni celle de Que Choisir. Une note ne remplace pas un avis médical.</p>
     </div>
@@ -509,6 +509,7 @@ function renderCosmetic(p){
         <div class="small muted">${a.toks.length} ingrédients lus${settings.lft?` · ${nLft} déconseillé${nLft>1?"s":""} par La Famille Tortue`:""} · ${a.offHits.length} point${a.offHits.length>1?"s":""} réglementaire${a.offHits.length>1?"s":""}</div></div>
     </div>
     ${a.toks.length?"":`<div class="alert">Liste d'ingrédients absente de la fiche : impossible d'analyser la composition. Vous pouvez la compléter sur ${esc(src[2])}.</div>`}
+    ${a.doubtful?`<div class="alert red">La liste d'ingrédients de cette fiche semble mal lue (photo floue) : ${a.bad.length} ingrédient${a.bad.length>1?"s":""} illisible${a.bad.length>1?"s":""}. Des ingrédients peuvent échapper à l'analyse. Vous pouvez la corriger sur ${esc(src[2])} (lien en bas), l'appli en tiendra compte au prochain scan.</div>`:""}
     ${a.interdit?`<div class="alert red">Un ingrédient de la liste est interdit aujourd'hui. Le produit peut être ancien : vérifiez l'emballage.</div>`:""}
     ${lftBlock}
     ${offBlock}

@@ -51,7 +51,7 @@ console.log(`OK : ${KB.length} familles, ${KB.filter(g => g.verif).length} véri
   if (!C.JOURNAL_C.length || C.JOURNAL_C.some(j => !/^\d{4}-\d{2}-\d{2}$/.test(j[0]) || !j[1])) e2.push("JOURNAL_C invalide");
   // Cas témoins du moteur
   const t1 = C.analyseCosmetic({product_name: "Shampoing", categories_tags: ["en:shampoos"], ingredients_text: "Aqua, Sodium Laureth Sulfate, Cyclopentasiloxane, Perfluorohexane, Limonene"});
-  if (!t1.interdit || t1.score > 10 || !t1.hits.some(h => h.g.id === "cyclo") || t1.hits.some(h => h.g.id === "silicones") || !t1.fam || t1.fam.id !== "shampoing") e2.push("moteur : cas témoin 1 incorrect");
+  if (!t1.interdit || t1.score > 10 || t1.doubtful || !t1.hits.some(h => h.g.id === "cyclo") || t1.hits.some(h => h.g.id === "silicones") || !t1.fam || t1.fam.id !== "shampoing") e2.push("moteur : cas témoin 1 incorrect");
   const t2 = C.analyseCosmetic({product_name: "Savon", ingredients_text: "Sodium Olivate, Aqua, Sodium Chloride"});
   if (t2.score !== 100 || !t2.lftOk.length) e2.push("moteur : cas témoin 2 incorrect");
   if (e2.length) { console.error(e2.join("\n")); process.exit(1); }

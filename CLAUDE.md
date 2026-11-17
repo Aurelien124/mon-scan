@@ -1,12 +1,14 @@
 # Mon Scan
 
-Appli web personnelle de scan alimentaire (un seul utilisateur). Hébergée par GitHub Pages depuis la branche `main` : tout commit sur `main` est en ligne quelques minutes après, sur https://aurelien124.github.io/mon-scan/.
+Appli web personnelle de scan (aliments, cosmétiques, produits ménagers ; un seul utilisateur). Hébergée par GitHub Pages depuis la branche `main` : tout commit sur `main` est en ligne quelques minutes après, sur https://aurelien124.github.io/mon-scan/.
 
 ## Fichiers
 
 - `index.html` : l'appli (interface, scan, calcul de la note, moteur de détection). Ne pas y toucher pour une simple mise à jour de contenu.
 - `kb.js` : la base de connaissances (`KB`, une entrée par famille d'aliments) et le `JOURNAL` des mises à jour. C'est le fichier à faire évoluer.
-- `tests/check.js` : contrôle de cohérence de `kb.js`. À lancer avant tout commit : `node tests/check.js`.
+- `kbc.js` : base cosmétiques et ménager (`INGC` familles d'ingrédients, `SRC` sources officielles, `CFAM` familles de produits avec alternatives, analyses de La Famille Tortue, `JOURNAL_C`).
+- `cosmo.js` : moteur d'analyse des listes INCI (Open Beauty Facts, Open Products Facts). Pas de contenu.
+- `tests/check.js` : contrôle de cohérence de `kb.js` et `kbc.js`. À lancer avant tout commit : `node tests/check.js`.
 - `muscu/` : appli séparée « Ma Muscu » (suivi de musculation), en ligne sur https://aurelien124.github.io/mon-scan/muscu/. Sans lien avec Mon Scan : la mise à jour de la base de connaissances n'y touche pas.
 
 ## Règles pour modifier `kb.js`
@@ -22,6 +24,14 @@ Appli web personnelle de scan alimentaire (un seul utilisateur). Hébergée par 
 - Ton des textes : français, phrases courtes, factuel, sans alarmisme.
 - À chaque mise à jour, ajouter une ligne en tête de `JOURNAL` : date du jour et résumé en une phrase.
 - Modifications petites et ciblées. Ne pas réécrire le fichier en entier.
+
+## Règles pour modifier `kbc.js`
+
+- La référence choisie par l'utilisateur pour les cosmétiques et le ménager est le blog La Famille Tortue (https://lafamilletortue.fr/, articles gratuits). Son avis va dans `lft` (et dans `CFAM`, `LFT_MARQUES`, `LFT_PRODUITS`), toujours attribué à elle, avec l'URL exacte de l'article. Reformuler avec nos mots ; ne pas recopier ses tableaux ni ses textes ; ne pas utiliser son livre payant (Klinki).
+- Le statut réglementaire va dans `off`, séparé de son avis, avec au moins une source consultée ajoutée à `SRC` (règlement UE, ANSM, DGCCRF, ECHA, SCCS, puis associations). `off: null` si aucune restriction n'a été trouvée. Ne jamais faire passer l'avis de La Famille Tortue pour une règle officielle, ni l'inverse.
+- Signaler les partenariats commerciaux qu'elle déclare (`LFT_PARTENAIRES`, 4e champ des alternatives).
+- Les regex `re` s'appliquent à chaque ingrédient INCI en minuscules, sans accents. `gen: 1` pour une famille générale (ex. silicones) qui s'efface derrière une famille plus précise.
+- À chaque mise à jour, ajouter une ligne en tête de `JOURNAL_C`.
 
 ## Avant de pousser
 

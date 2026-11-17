@@ -1,6 +1,6 @@
 // Cache hors ligne : l'appli fonctionne sans réseau une fois ouverte.
-const CACHE = 'ma-muscu-v2';
-const FILES = ['./', 'index.html', 'styles.css', 'data.js', 'parser.js', 'app.js', 'manifest.webmanifest',
+const CACHE = 'ma-muscu-v3';
+const FILES = ['./', 'index.html', 'styles.css', 'data.js', 'lexique.js', 'fig.js', 'parser.js', 'suivi.js', 'app.js', 'manifest.webmanifest',
   'icons/icon.svg', 'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png', 'vendor/pdf.min.mjs', 'vendor/pdf.worker.min.mjs'];
 
 self.addEventListener('install', e => {

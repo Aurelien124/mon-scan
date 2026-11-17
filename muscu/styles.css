@@ -115,3 +115,14 @@ nav.bar a.live .i{animation:pulse 1.6s infinite}
 
 .ex.ssx{border-left:3px solid var(--acc)}
 details summary{cursor:pointer}
+.thumb{width:58px;height:50px;background:var(--bg2);border-radius:8px;display:block}
+.thumb.noimg{display:flex;align-items:center;justify-content:center;color:var(--dim);font-weight:700}
+.fig-wrap{background:var(--bg2);border-radius:12px;padding:4px}
+.fig-big{width:100%;max-height:240px;display:block}
+.fiche ul{margin:4px 0 8px;padding-left:18px;color:var(--mut)}
+.fiche li{margin:2px 0}
+.heat{width:100%;height:auto;display:block}
+.bar-h{height:9px;border-radius:5px;background:var(--acc)}
+.insight{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.insight:last-child{border-bottom:0}
+.insight .ic{font-size:20px;line-height:1.2}

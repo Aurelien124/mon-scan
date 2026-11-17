@@ -323,6 +323,7 @@ const LFT_PRODUITS = [
 const LFT_PARTENAIRES = ["comme avant","savon arthur","senza","la fourche","gaelle besse","veraem","lao"];
 
 const JOURNAL_C = [
+  ["2026-11-17", "Les produits dont la liste d'ingrédients est mal lue ou trop courte sont signalés dans l'historique, pour les corriger sur Open Beauty Facts."],
   ["2026-11-17", "Note cosmétique alignée sur la logique de La Famille Tortue (un ingrédient déconseillé suffit à sortir du « clean ») et alerte quand la liste d'ingrédients de la fiche est mal lue."],
   ["2026-11-17", "Création de la partie cosmétiques et ménager : " + INGC.length + " familles d'ingrédients (statut officiel vérifié et avis de La Famille Tortue), 15 familles de produits avec alternatives, analyses de marques et de produits de La Famille Tortue."]
 ];

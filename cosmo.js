@@ -111,7 +111,7 @@ function analyseCosmetic(p, opts){
     if(offHits.some(h=>h.g.off[0]===3)) score = Math.min(score, 10);
   }
   const bad = toks.filter(garbled);
-  return {toks, hits, offHits, lftHits, lftOk, score, nEvite, bad, doubtful: toks.length>0 && (bad.length>=2 || bad.length/toks.length>0.15),
+  return {toks, hits, offHits, lftHits, lftOk, score, nEvite, bad, doubtful: toks.length>0 && (bad.length>=2 || bad.length/toks.length>0.15 || toks.length<4),
           interdit: offHits.some(h=>h.g.off[0]===3),
           fam: findCFam(p), marque: lftBrand(p), produit: lftProduct(p)};
 }

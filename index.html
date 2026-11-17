@@ -509,7 +509,7 @@ function renderCosmetic(p){
         <div class="small muted">${a.toks.length} ingrédients lus${settings.lft?` · ${nLft} déconseillé${nLft>1?"s":""} par La Famille Tortue`:""} · ${a.offHits.length} point${a.offHits.length>1?"s":""} réglementaire${a.offHits.length>1?"s":""}</div></div>
     </div>
     ${a.toks.length?"":`<div class="alert">Liste d'ingrédients absente de la fiche : impossible d'analyser la composition. Vous pouvez la compléter sur ${esc(src[2])}.</div>`}
-    ${a.doubtful?`<div class="alert red">La liste d'ingrédients de cette fiche semble mal lue (photo floue) : ${a.bad.length} ingrédient${a.bad.length>1?"s":""} illisible${a.bad.length>1?"s":""}. Des ingrédients peuvent échapper à l'analyse. Vous pouvez la corriger sur ${esc(src[2])} (lien en bas), l'appli en tiendra compte au prochain scan.</div>`:""}
+    ${a.doubtful?`<div class="alert red">La liste d'ingrédients de cette fiche semble mal lue ou incomplète (${a.toks.length} ingrédient${a.toks.length>1?"s":""} lu${a.toks.length>1?"s":""}, ${a.bad.length} illisible${a.bad.length>1?"s":""}). Des ingrédients peuvent échapper à l'analyse. Vous pouvez la corriger sur ${esc(src[2])} (lien en bas), l'appli en tiendra compte au prochain scan.</div>`:""}
     ${a.interdit?`<div class="alert red">Un ingrédient de la liste est interdit aujourd'hui. Le produit peut être ancien : vérifiez l'emballage.</div>`:""}
     ${lftBlock}
     ${offBlock}
@@ -580,7 +580,7 @@ async function lookup(raw){
   current = hit.value;
   const a = renderProduct(current,false);
   say("");
-  history = [{code, name: current.product_name_fr||current.product_name||"Produit sans nom", brand: current.brands||"", score:a.score, type:current._src, ts:Date.now()}]
+  history = [{code, name: current.product_name_fr||current.product_name||"Produit sans nom", brand: current.brands||"", score:a.score, type:current._src, warn:!!(a.doubtful || (current._src!=="food" && !a.toks.length)), ts:Date.now()}]
     .concat(history.filter(h=>h.code!==code)).slice(0,50);
   store.set("ms-history",history); renderHistory();
   $("#result").scrollIntoView({behavior:"smooth",block:"start"});
@@ -746,7 +746,7 @@ function renderGuides(q){
 function renderHistory(){
   $("#hist").innerHTML = history.length ? history.map(h=>{
     const c = verdict(h.score)[1];
-    return `<button type="button" data-code="${esc(h.code)}"><span class="pill" style="background:${c}">${h.score==null?"?":h.score}</span><span><b>${esc(h.name)}</b><br><span class="muted small">${esc(h.brand)}${h.brand?" · ":""}${new Date(h.ts).toLocaleDateString("fr-FR")}</span></span></button>`;
+    return `<button type="button" data-code="${esc(h.code)}"><span class="pill" style="background:${c}">${h.score==null?"?":h.score}</span><span><b>${esc(h.name)}</b><br><span class="muted small">${esc(h.brand)}${h.brand?" · ":""}${new Date(h.ts).toLocaleDateString("fr-FR")}</span>${h.warn?'<br><span class="small" style="color:var(--bad)">Liste d\'ingrédients à vérifier sur la fiche</span>':""}</span></button>`;
   }).join("") : '<p class="muted small">Vos scans apparaîtront ici. Ils restent sur cet appareil.</p>';
 }
 function renderSettings(){

@@ -712,22 +712,33 @@ async function searchText(q){
       ${!pending?'<p class="small muted">La note de la liste est indicative : elle se recalcule en ouvrant le produit.</p>':""}
     </div>`;
   };
-  const add = (c,n,b,sc,src)=>{ if(!c||!n||found.has(c)) return; found.set(c,{c,n:String(n).replace(/\\(.)/g,"$1"),b:Array.isArray(b)?b.join(", "):b,s:sc,src,m:match(n,b||"")?1:0}); };
+  const add = (c,n,b,sc,src,sure)=>{
+    if(!c||!n) return;
+    const old = found.get(c);
+    // Garder la version venant de la bonne base (même calcul que la fiche produit).
+    if(old && !(sure && !old.sure)) return;
+    found.set(c,{c,n:String(n).replace(/\\(.)/g,"$1"),b:Array.isArray(b)?b.join(", "):b,s:sc,src,sure:!!sure,m:match(n,b||"")?1:0}); };
   draw();
   // 1. Index local (produits les plus scannés, mis à jour chaque lundi) : instantané.
   getIndex().then(idx=>{
-    if(idx) for(const f of Object.values(idx.fam)) for(const [c,n,b,sc] of f.l) if(match(n,b)) add(c,n,b,sc,f.src);
+    if(idx) for(const f of Object.values(idx.fam)) for(const [c,n,b,sc] of f.l) if(match(n,b)) add(c,n,b,sc,f.src,true);
     pending--; draw();
   });
   // 2. Bases en direct (recherche texte).
   const score = (x,src)=>{ try{ x._src=src; return src==="food" ? analyse(x, settings.w).score : analyseCosmetic(x,{lft:settings.lft, lftScore:settings.lftScore}).score; }catch(e){ return null; } };
   const remote = async (src)=>{
     const S = srcOf(src);
-    const url = S[1]+"/cgi/search.pl?search_terms="+encodeURIComponent(q)+"&search_simple=1&action=process&json=1&page_size=24&sort_by=unique_scans_n&fields="+(src==="food"?FIELDS:CFIELDS);
+    const url = S[1]+"/cgi/search.pl?search_terms="+encodeURIComponent(q)+"&search_simple=1&action=process&json=1&page_size=24&sort_by=unique_scans_n&fields="+(src==="food"?FIELDS+",product_type":CFIELDS);
     for(let i=0;i<(src==="food"?3:2);i++){
       try{
         const r = await fetchT(url, 10000);
-        if(r.ok){ const j = await r.json(); for(const x of j.products||[]) add(x.code, x.product_name_fr||x.product_name, x.brands, score(x,src), src); return true; }
+        if(r.ok){ const j = await r.json();
+          for(const x of j.products||[]){
+            // Le type déclaré sur la fiche prime sur la base interrogée (des cosmétiques traînent dans Open Food Facts).
+            const real = x.product_type==="beauty" ? "beauty" : x.product_type==="product" ? "product" : x.product_type==="food" ? "food" : src;
+            add(x.code, x.product_name_fr||x.product_name, x.brands, score(x,real), real, real===src);
+          }
+          return true; }
       }catch(e){}
       await new Promise(r=>setTimeout(r,1500));
     }

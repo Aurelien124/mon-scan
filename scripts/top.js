@@ -107,7 +107,7 @@ const FAM = [
   ["nettoyant","Ménager","Nettoyants ménagers","product",["en:all-purpose-cleaners","en:multi-purpose-cleaners","en:household-cleaners","en:cleaning-products","en:cleaners"]]
 ];
 const BASE = {food:"https://world.openfoodfacts.org", beauty:"https://world.openbeautyfacts.org", product:"https://world.openproductsfacts.org"};
-const FFIELDS = "code,product_name,product_name_fr,generic_name,generic_name_fr,brands,image_front_small_url,nutriscore_grade,nova_group,additives_tags,labels_tags,labels,categories_tags,categories,origins,quantity,ingredients_text,ingredients_text_fr,nutriments";
+const FFIELDS = "code,product_name,product_name_fr,generic_name,generic_name_fr,brands,image_front_small_url,nutriscore_grade,nova_group,additives_tags,labels_tags,labels,categories_tags,categories,origins,quantity,ingredients_text,ingredients_text_fr,nutriments,product_type";
 const CFIELDS = "code,product_name,product_name_fr,generic_name,generic_name_fr,categories,brands,image_front_small_url,ingredients_text,ingredients_text_fr,ingredients_text_en,categories_tags,product_type";
 const UA = "MonScan/1.0 (https://github.com/Aurelien124/mon-scan)";
 const ORGANIC = ["en:organic","en:eu-organic","fr:ab-agriculture-biologique"];
@@ -172,6 +172,7 @@ async function search(base, tag, food, brand){
       let s, it;
       let k = 0;
       if(food){
+        if(p.product_type && p.product_type!=="food") continue; // cosmétique ou produit ménager rangé par erreur dans la base aliments
         if(!/^[a-e]$/.test(String(p.nutriscore_grade||""))) continue; // note complète seulement
         const r = analyse(p, W); s = r.score; k = r.adds.length;
         var fk = famBonus(p, r.adds.map(x=>x.code));

@@ -32,16 +32,19 @@ const CMAP = {douche:"douche", savon:"douche", shampoing:"shampoing", "apres-sha
 const PLUS = {dentifrice:["L'Arbre Vert"], douche:["L'Arbre Vert"], lessive:["L'Arbre Vert"], vaisselle:["L'Arbre Vert"]};
 // Marques cherchées dans toutes les familles cosmétiques, et dont tous les produits vont dans l'index de recherche.
 const PLUS_COSMETO = ["Aroma-Zone"];
-// Le nom du produit doit correspondre à la famille (des fiches sont mal rangées dans les bases).
+// Nom qui désigne clairement une famille : un produit est écarté si son nom désigne une AUTRE famille que la sienne
+// (ex. « gel douche » rangé en shampoing). Un nom neutre (« Elmex anti-caries ») est gardé.
 const NAMERE = {
-  douche:/douche|shower|lavant|wash|bain/, savon:/savon|soap|pain (de toilette|surgras|dermatologique)/, shampoing:/shamp/,
-  "apres-shampoing":/apres[- ]?shamp|conditioner|demelant|masque|soin capillaire|apres[- ]?champ/, deo:/deo|deodor|transpir/,
-  dentifrice:/dentifr|toothpaste|pate dentaire/, solaire:/solaire|spf|\bsun|ecran|protect/, visage:/visage|face|serum|creme|soin|jour|nuit|hydrat|fluide|gel/,
-  corps:/corps|body|lait|creme|beurre|baume|lotion/, mains:/\bmains?\b|hand/, levres:/levre|lip|baume|stick/,
-  demaq:/demaq|micell|nettoy|make-?up|eau|lait|huile/, lessive:/lessive|laundry|detergent|lavage|linge/,
-  "lave-vaisselle":/lave[- ]?vaisselle|dishwasher|tablette|capsule|pastille|poudre/, vaisselle:/vaisselle|dish|plonge/,
-  nettoyant:/nettoy|clean|multi|surface|sol|vitre|degraiss|detartr/
+  douche:/gel douche|creme de douche|douche|shower/, savon:/\bsavon|\bsoap/, shampoing:/shamp/, "apres-shampoing":/apres[- ]?shamp|conditioner|demelant/,
+  deo:/deodor|\bdeo\b|anti-?transpir/, dentifrice:/dentifr|toothpaste/, solaire:/solaire|\bspf\b|sunscreen/, mains:/creme (pour les )?mains|hand cream/,
+  levres:/levres|lip balm|lip care/, lessive:/lessive|laundry/, vaisselle:/liquide vaisselle|vaisselle main/, "lave-vaisselle":/lave[- ]?vaisselle|dishwasher/
 };
+// Familles proches : leurs mots ne disqualifient pas (un gel douche peut s'appeler « savon », un après-shampoing « shampoing »).
+const NEAR = {douche:["savon","shampoing"], shampoing:["apres-shampoing"], "apres-shampoing":["shampoing"], vaisselle:["lave-vaisselle"], "lave-vaisselle":["vaisselle"]};
+function wrongFamily(id, txt){
+  if(NAMERE[id] && NAMERE[id].test(txt)) return false;
+  return Object.keys(NAMERE).some(o=>o!==id && !(NEAR[id]||[]).includes(o) && NAMERE[o].test(txt));
+}
 const nrm = x => String(x||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
 // Vendu en France : fiche marquée France et scannée en France (étiquette de popularité Open Facts « …-fr-scans-… »).
 const inFrance = p => (p.countries_tags||[]).includes("en:france") && (p.popularity_tags||[]).some(t=>/-fr-scans-/.test(t));
@@ -188,7 +191,7 @@ async function search(base, tag, food, brand){
       const name = String(p.product_name_fr || p.product_name || "").replace(/\\(.)/g,"$1").trim();
       if(!p.code || !name || seen.has(p.code)) continue;
       if(strict && !p._followed && !inFrance(p)){ outFr++; continue; }
-      if(NAMERE[id] && !NAMERE[id].test(nrm(name+" "+(p.generic_name_fr||"")))){ outName++; continue; }
+      if(!food && wrongFamily(id, nrm(name+" "+(p.generic_name_fr||"")))){ outName++; continue; }
       let s, it;
       let k = 0;
       if(food){

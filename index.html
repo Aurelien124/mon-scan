@@ -853,7 +853,9 @@ async function lookup(raw, opt){
   const res = await Promise.allSettled(SOURCES.map(src=>fetchFrom(src,code)));
   const hit = res.find(r=>r.status==="fulfilled" && r.value);
   if(!hit){
-    if(res.every(r=>r.status==="rejected")) say("Les bases Open Facts ne répondent pas. Vérifiez la connexion puis réessayez.",true);
+    if(res.every(r=>r.status==="rejected")) say(navigator.onLine===false
+      ? "Pas de connexion, et ce produit n'a encore jamais été consulté : il n'est pas disponible hors ligne. Les produits déjà scannés, eux, s'ouvrent sans réseau."
+      : "Les bases Open Facts ne répondent pas. Vérifiez la connexion puis réessayez.",true);
     else notFound(code);
     return;
   }
@@ -1088,6 +1090,8 @@ renderGuides(); renderHistory(); renderSettings(); getDetector();
 $("#kbcount").textContent = "Alimentation : "+KB.length+" familles, dont "+KB.filter(g=>g.verif).length+" vérifiées sur sources. Cosmétiques et ménager : "+CFAM.length+" familles de produits, "+INGC.length+" familles d'ingrédients.";
 $("#journal").innerHTML = JOURNAL.concat(JOURNAL_C).sort((a,b)=>b[0].localeCompare(a[0])).map(j=>"<li><b>"+esc(new Date(j[0]).toLocaleDateString("fr-FR"))+"</b> : "+esc(j[1])+"</li>").join("");
 renderHome();
+// Mode hors ligne : voir sw.js.
+if("serviceWorker" in navigator && location.protocol!=="file:") navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script>
 </body>
 </html>

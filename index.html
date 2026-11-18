@@ -177,7 +177,7 @@ ul.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;f
 
 /* Historique & réglages */
 .hist{display:flex;flex-direction:column}
-.hist button{all:unset;cursor:pointer;display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.hist button{all:unset;cursor:pointer;display:grid;grid-template-columns:48px 1fr 44px;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
 .hist button:last-child{border-bottom:0}
 .pill{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-variant-numeric:tabular-nums}
 .set{display:grid;grid-template-columns:120px 1fr 42px;gap:10px;align-items:center;font-size:15px}
@@ -198,9 +198,12 @@ label.check input{width:20px;height:20px;accent-color:var(--accent)}
 .seg button{all:unset;cursor:pointer;text-align:center;padding:10px 4px;border-radius:9px;font-weight:700;font-size:14px;color:var(--muted)}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .toplist{counter-reset:r}
-.toplist button{grid-template-columns:22px 40px 1fr !important}
+.toplist button{grid-template-columns:20px 48px 1fr 40px !important}
 .toplist .rk{font-weight:800;color:var(--muted);font-size:13px;text-align:right}
-.alts button{all:unset;cursor:pointer;display:grid;grid-template-columns:40px 1fr;gap:10px;align-items:center;width:100%}
+.alts button{all:unset;cursor:pointer;display:grid;grid-template-columns:48px 1fr 40px;gap:10px;align-items:center;width:100%}
+.thumb{width:48px;height:48px;border-radius:10px;background:var(--tint);overflow:hidden;display:grid;place-items:center;border:1px solid var(--line)}
+.thumb img{width:100%;height:100%;object-fit:contain;background:#fff}
+.thumb svg{width:22px;height:22px;stroke:var(--muted);fill:none;stroke-width:1.6;opacity:.6}
 .ptag{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:1px 5px;margin-left:4px;border:1px solid var(--line);color:var(--muted)}
 .lftbox{border:1px solid color-mix(in srgb,#7a4fb5 40%,var(--surface));background:color-mix(in srgb,#7a4fb5 8%,var(--surface));border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
 .lftbox h3{color:#7a4fb5}
@@ -628,9 +631,13 @@ function topItems(f){
   l.forEach((o,i)=>{ o.rank = i && o.s===l[i-1].s && (o.it.fk||0)===(l[i-1].it.fk||0) ? l[i-1].rank : i+1; });
   return l;
 }
-function prodBtn(code, name, brand, sc, img, rank){
+function thumb(img){
   const im = safeImg(img);
-  return `<li><button type="button" data-alt="${esc(code)}">${rank?`<span class="rk">${rank}</span>`:""}<span class="pill" style="background:${verdict(sc)[1]};width:40px;height:40px">${sc}</span><span><b>${esc(name)}</b><br><span class="muted small">${esc(brand||"")}</span></span></button></li>`;
+  return `<span class="thumb">${im?`<img src="${esc(im)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">`:'<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 16l4-4 4 4 3-3 5 5"/></svg>'}</span>`;
+}
+const pillS = sc => `<span class="pill" style="background:${verdict(sc)[1]};width:40px;height:40px">${sc==null?"?":sc}</span>`;
+function prodBtn(code, name, brand, sc, img, rank){
+  return `<li><button type="button" data-alt="${esc(code)}">${rank?`<span class="rk">${rank}</span>`:""}${thumb(img)}<span><b>${esc(name)}</b><br><span class="muted small">${esc(brand||"")}</span></span>${pillS(sc)}</button></li>`;
 }
 function altFamily(p, top){
   if(!top) return null;
@@ -707,21 +714,21 @@ async function searchText(q){
     const list = [...found.values()].sort((a,b)=>(b.m-a.m) || ((b.s==null?-1:b.s)-(a.s==null?-1:a.s)));
     $("#result").innerHTML = `<div class="card res" id="srch">
       <h2>Recherche « ${esc(q)} »</h2>
-      ${list.length?`<ul class="alts">${list.slice(0,40).map(o=>`<li><button type="button" data-hit="${esc(o.c)}"><span class="pill" style="background:${verdict(o.s)[1]};width:40px;height:40px">${o.s==null?"?":o.s}</span><span><b>${esc(o.n)}</b><span class="srch-src">${KIND[o.src]||""}</span><br><span class="muted small">${esc(o.b||"")}</span></span></button></li>`).join("")}</ul>`:""}
+      ${list.length?`<ul class="alts">${list.slice(0,40).map(o=>`<li><button type="button" data-hit="${esc(o.c)}">${thumb(o.i)}<span><b>${esc(o.n)}</b><span class="srch-src">${KIND[o.src]||""}</span><br><span class="muted small">${esc(o.b||"")}</span></span>${pillS(o.s)}</button></li>`).join("")}</ul>`:""}
       <p class="small muted">${pending?"Recherche dans les bases Open Facts…":list.length?`${list.length} produit${list.length>1?"s":""} trouvé${list.length>1?"s":""}.`:"Aucun produit trouvé. Essayez un autre mot, ou la marque."}${!pending&&fails.length?` ${fails.join(", ")} : pas de réponse (serveur saturé), résultats partiels. <button class="btn ghost small" type="button" data-research="${esc(q)}">Relancer</button>`:""}</p>
       ${!pending?'<p class="small muted">La note de la liste est indicative : elle se recalcule en ouvrant le produit.</p>':""}
     </div>`;
   };
-  const add = (c,n,b,sc,src,sure)=>{
+  const add = (c,n,b,sc,src,sure,img)=>{
     if(!c||!n) return;
     const old = found.get(c);
     // Garder la version venant de la bonne base (même calcul que la fiche produit).
     if(old && !(sure && !old.sure)) return;
-    found.set(c,{c,n:String(n).replace(/\\(.)/g,"$1"),b:Array.isArray(b)?b.join(", "):b,s:sc,src,sure:!!sure,m:match(n,b||"")?1:0}); };
+    found.set(c,{c,n:String(n).replace(/\\(.)/g,"$1"),b:Array.isArray(b)?b.join(", "):b,s:sc,src,sure:!!sure,i:img||(old&&old.i)||"",m:match(n,b||"")?1:0}); };
   draw();
   // 1. Index local (produits les plus scannés, mis à jour chaque lundi) : instantané.
   getIndex().then(idx=>{
-    if(idx) for(const f of Object.values(idx.fam)) for(const [c,n,b,sc] of f.l) if(match(n,b)) add(c,n,b,sc,f.src,true);
+    if(idx) for(const f of Object.values(idx.fam)) for(const [c,n,b,sc,im] of f.l) if(match(n,b)) add(c,n,b,sc,f.src,true,im);
     pending--; draw();
   });
   // 2. Bases en direct (recherche texte).
@@ -736,7 +743,7 @@ async function searchText(q){
           for(const x of j.products||[]){
             // Le type déclaré sur la fiche prime sur la base interrogée (des cosmétiques traînent dans Open Food Facts).
             const real = x.product_type==="beauty" ? "beauty" : x.product_type==="product" ? "product" : x.product_type==="food" ? "food" : src;
-            add(x.code, x.product_name_fr||x.product_name, x.brands, score(x,real), real, real===src);
+            add(x.code, x.product_name_fr||x.product_name, x.brands, score(x,real), real, real===src, x.image_front_small_url);
           }
           return true; }
       }catch(e){}
@@ -761,7 +768,7 @@ function renderHome(){
   const nF = KB.length, nC = CFAM.filter(f=>f.t!=="menager").length, nM = CFAM.filter(f=>f.t==="menager").length;
   $("#result").innerHTML = `
   ${recent.length?`<div class="card"><div class="row" style="justify-content:space-between"><h2>Derniers scans</h2><button class="btn ghost small" type="button" data-view="hist">Tout voir</button></div>
-    <ul class="alts">${recent.map(h=>`<li><button type="button" data-code="${esc(h.code)}"><span class="pill" style="background:${verdict(h.score)[1]};width:40px;height:40px">${h.score==null?"?":h.score}</span><span><b>${esc(h.name)}</b><br><span class="muted small">${esc(h.brand||"")}</span></span></button></li>`).join("")}</ul></div>`
+    <ul class="alts">${recent.map(h=>`<li><button type="button" data-code="${esc(h.code)}">${thumb(h.img)}<span><b>${esc(h.name)}</b><br><span class="muted small">${esc(h.brand||"")}</span></span>${pillS(h.score)}</button></li>`).join("")}</ul></div>`
   :`<div class="card"><h2>Comment ça marche</h2><ol class="steps">
       <li><span><b>Scannez</b> un aliment, un cosmétique ou un produit ménager.</span></li>
       <li><span><b>Lisez la note</b> sur 100 et les points qui la font baisser, avec leurs sources.</span></li>
@@ -863,7 +870,7 @@ async function lookup(raw, opt){
   const a = renderProduct(current,false);
   say("");
   if(opt.noHist){ window.scrollTo(0,0); return; }
-  history = [{code, name: current.product_name_fr||current.product_name||"Produit sans nom", brand: current.brands||"", score:a.score, type:current._src, warn:!!(a.doubtful || (current._src!=="food" && !a.toks.length)), ts:Date.now()}]
+  history = [{code, name: current.product_name_fr||current.product_name||"Produit sans nom", brand: current.brands||"", img: current.image_front_small_url||"", score:a.score, type:current._src, warn:!!(a.doubtful || (current._src!=="food" && !a.toks.length)), ts:Date.now()}]
     .concat(history.filter(h=>h.code!==code)).slice(0,50);
   store.set("ms-history",history); renderHistory();
   $("#result").scrollIntoView({behavior:"smooth",block:"start"});
@@ -1029,7 +1036,7 @@ function renderGuides(q){
 function renderHistory(){
   $("#hist").innerHTML = history.length ? history.map(h=>{
     const c = verdict(h.score)[1];
-    return `<button type="button" data-code="${esc(h.code)}"><span class="pill" style="background:${c}">${h.score==null?"?":h.score}</span><span><b>${esc(h.name)}</b><br><span class="muted small">${esc(h.brand)}${h.brand?" · ":""}${new Date(h.ts).toLocaleDateString("fr-FR")}</span>${h.warn?'<br><span class="small" style="color:var(--bad)">Liste d\'ingrédients à vérifier sur la fiche</span>':""}</span></button>`;
+    return `<button type="button" data-code="${esc(h.code)}">${thumb(h.img)}<span><b>${esc(h.name)}</b><br><span class="muted small">${esc(h.brand)}${h.brand?" · ":""}${new Date(h.ts).toLocaleDateString("fr-FR")}</span>${h.warn?'<br><span class="small" style="color:var(--bad)">Liste d\'ingrédients à vérifier sur la fiche</span>':""}</span><span class="pill" style="background:${c}">${h.score==null?"?":h.score}</span></button>`;
   }).join("") : '<p class="muted small">Vos scans apparaîtront ici. Ils restent sur cet appareil.</p>';
 }
 function renderSettings(){

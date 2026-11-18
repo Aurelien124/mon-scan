@@ -45,7 +45,17 @@ function wrongFamily(id, txt){
   if(NAMERE[id] && NAMERE[id].test(txt)) return false;
   return Object.keys(NAMERE).some(o=>o!==id && !(NEAR[id]||[]).includes(o) && NAMERE[o].test(txt));
 }
-const nrm = x => String(x||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+// Aliments : mot obligatoire dans le nom pour les familles au nom sans ambiguïté.
+const MUST = {
+  ketchup:/ketch|heinz.*(zero|sel|sucre)/, mayonnaise:/mayo/, moutarde:/moutard|mustard|dijon/, pesto:/pesto/, houmous:/houmous|hummus|humus|houmos/,
+  "pain-epices":/epice|gingerbread/, lardons:/lardon|allumette/, pizzas:/pizz/, sardines:/sardin/, maquereau:/maquer|mackerel/,
+  thon:/thon|tuna/, "saumon-fume":/saumon|salmon|lachs/, "jambon-cru":/jambon|prosciutto|serrano|bayonne|parme|jamon|speck|coppa/,
+  oeufs:/oeuf|egg/, riz:/\briz\b|rice|basmati|risotto/, chips:/chip/, beurre:/beurre|butter/, brioches:/brioch|gache/,
+  "jus-orange":/jus|juice|nectar|orange/, "jus-pomme":/jus|juice|pomme|apple/,
+  "fromage-blanc":/fromage blanc|faisselle|fromages? frais|skyr|quark|fromage battu/,
+  "huile-olive":/olive/, "sauce-tomate":/tomat|bolognaise|arrabbiata|basilic|napolitaine|sugo|passata|provencal/
+};
+const nrm = x => String(x||"").toLowerCase().replace(/œ/g,"oe").replace(/æ/g,"ae").normalize("NFD").replace(/[\u0300-\u036f]/g,"");
 // Vendu en France : fiche marquée France et scannée en France (étiquette de popularité Open Facts « …-fr-scans-… »).
 const inFrance = p => (p.countries_tags||[]).includes("en:france") && (p.popularity_tags||[]).some(t=>/-fr-scans-/.test(t));
 // Note affichée en tête de la famille dans l'onglet Top 10.
@@ -191,7 +201,9 @@ async function search(base, tag, food, brand){
       const name = String(p.product_name_fr || p.product_name || "").replace(/\\(.)/g,"$1").trim();
       if(!p.code || !name || seen.has(p.code)) continue;
       if(strict && !p._followed && !inFrance(p)){ outFr++; continue; }
-      if(!food && wrongFamily(id, nrm(name+" "+(p.generic_name_fr||"")))){ outName++; continue; }
+      const txt = nrm(name+" "+(p.generic_name_fr||""));
+      if(!food && wrongFamily(id, txt)){ outName++; continue; }
+      if(food && MUST[id] && !MUST[id].test(txt)){ outName++; continue; }
       let s, it;
       let k = 0;
       if(food){
@@ -215,7 +227,7 @@ async function search(base, tag, food, brand){
     }
     items.sort((x,y)=>y.s-x.s || (y.fk||0)-(x.fk||0) || x._k-y._k);
     items.forEach(it=>delete it._k);
-    idx.fam[id] = {src:base, l:items.map(it=>[it.c, it.n, it.b, it.s])};
+    idx.fam[id] = {src:base, l:items.map(it=>[it.c, it.n, it.b, it.s, it.i||""])};
     console.log(id.padEnd(16), used.padEnd(34), String(prods.length).padStart(3), "lus,", String(items.length).padStart(3), "notés, meilleur", items[0]?items[0].s:"-", "| vendus en France", nFr, strict?"(filtre appliqué, "+outFr+" écartés)":"(filtre non appliqué)", "| nom hors famille", outName);
     out.fam.push(Object.assign({id, g, t, src:base, tag:used, n:items.length, p:items.slice(0,15)}, NOTE[id]?{note:NOTE[id]}:{}));
   }
@@ -229,7 +241,7 @@ async function search(base, tag, food, brand){
       const name = String(p.product_name_fr || p.product_name || "").replace(/\\(.)/g,"$1").trim();
       if(!p.code || !name) continue;
       p._src = "beauty"; const r = analyseCosmetic(p, {lft:true, lftScore:true});
-      bl.push([p.code, name, p.brands||"", r.toks.length && !r.doubtful ? r.score : null]);
+      bl.push([p.code, name, p.brands||"", r.toks.length && !r.doubtful ? r.score : null, p.image_front_small_url||""]);
     }
   }
   if(bl.length) idx.fam["marques-suivies"] = {src:"beauty", l:bl}; else keepIdx("marques-suivies");

@@ -32,15 +32,15 @@
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;-webkit-text-size-adjust:100%}
-.app{max-width:560px;margin:0 auto;padding:16px 16px 96px;display:flex;flex-direction:column;gap:16px}
+.app{max-width:560px;margin:0 auto;padding:10px 12px calc(116px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px}
 header.top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-top:4px}
-header.top h1{font-family:var(--display);font-weight:800;font-size:26px;margin:0;letter-spacing:-.02em}
+header.top h1{font-family:var(--display);font-weight:800;font-size:21px;margin:0;letter-spacing:-.02em}
 header.top span{color:var(--muted);font-size:13px}
 h2{font-family:var(--display);font-weight:800;font-size:21px;margin:0;text-wrap:balance;letter-spacing:-.01em}
 h3{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0}
 p{margin:0}
 a{color:var(--accent)}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .muted{color:var(--muted)}
 .small{font-size:13.5px}
@@ -58,6 +58,41 @@ button,input,select{font:inherit;color:inherit}
 #reader::after{content:"";position:absolute;left:8%;right:8%;top:50%;height:2px;background:var(--bad);opacity:.8}
 .msg{border-radius:10px;padding:10px 12px;background:var(--tint);font-size:14.5px}
 .msg.err{background:color-mix(in srgb,var(--bad) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--bad) 40%,var(--surface))}
+
+/* Fiche produit compacte */
+.rhead{display:grid;grid-template-columns:52px 1fr 62px;gap:10px;align-items:center}
+.rhead img,.rhead .ph{width:52px;height:52px;object-fit:contain;border-radius:9px;background:#fff;border:1px solid var(--line)}
+.rhead .ph{background:var(--tint);border:0}
+.rhead .name{font-family:var(--display);font-weight:800;font-size:17px;line-height:1.15;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rhead .sub{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rhead .vd{font-family:var(--display);font-weight:800;font-size:15px;line-height:1.2}
+.spill{width:62px;height:62px;border-radius:16px;color:#fff;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:26px;line-height:1;text-align:center;font-variant-numeric:tabular-nums}
+.spill small{display:block;font-family:var(--body);font-size:10.5px;font-weight:600;opacity:.9;margin-top:2px}
+.minib{display:flex;gap:6px;flex-wrap:wrap}
+.minib span{font-size:12.5px;border:1px solid var(--line);border-radius:8px;padding:3px 7px;color:var(--muted)}
+.minib b{font-family:var(--display);font-weight:800;margin-left:3px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:12.5px;font-weight:600;border-radius:999px;padding:3px 9px;line-height:1.35}
+.chip.lft{background:color-mix(in srgb,#7a4fb5 14%,var(--surface));color:#6a3fa5}
+.chip.lim{background:color-mix(in srgb,var(--warn) 16%,var(--surface));color:color-mix(in srgb,var(--warn) 70%,var(--ink))}
+.chip.reg{background:color-mix(in srgb,var(--bad) 13%,var(--surface));color:var(--bad)}
+.chip.ok{background:color-mix(in srgb,var(--good) 13%,var(--surface));color:var(--good)}
+@media (prefers-color-scheme:dark){.chip.lft{color:#c9a6f2}}
+.line{font-size:13.5px;color:var(--muted)}
+.famline{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg);display:flex;flex-direction:column;gap:6px;font-size:14px}
+.famline .list li{font-size:13.5px}
+.famline .dot{margin-top:5px}
+details.sec{border-top:1px solid var(--line);padding-top:0}
+details.sec>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:44px;font-weight:600;font-size:15px}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::after{content:"+";font-family:var(--display);font-size:22px;color:var(--muted);width:18px;text-align:center}
+details.sec[open]>summary::after{content:"–"}
+details.sec>summary .cnt{margin-left:auto;font-size:12.5px;font-weight:700;color:var(--muted)}
+details.sec>*+*{margin-top:4px}
+details.sec[open]{padding-bottom:8px}
+.res .alert{padding:6px 10px;font-size:13.5px}
+body.has-result .hide-res{display:none!important}
+.scanrow{display:grid;grid-template-columns:1fr auto;gap:8px}
 
 /* Fiche produit */
 .prod{display:flex;gap:14px;align-items:center}
@@ -140,9 +175,9 @@ label.check input{width:20px;height:20px;accent-color:var(--accent)}
 @media (prefers-color-scheme:dark){.lv-lft{background:#b48ae6}.alert.lft{border-left-color:#b48ae6}.lftbox h3{color:#c9a6f2}}
 
 /* Onglets */
-nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:6px max(8px,env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom));z-index:5}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:8px max(10px,env(safe-area-inset-left)) calc(16px + env(safe-area-inset-bottom));z-index:5;box-shadow:0 -4px 14px rgba(0,0,0,.06)}
 nav.tabs div{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
-.tab{all:unset;cursor:pointer;text-align:center;padding:10px 4px;border-radius:10px;font-size:13.5px;font-weight:600;color:var(--muted)}
+.tab{all:unset;cursor:pointer;text-align:center;padding:14px 4px;min-height:24px;border-radius:12px;font-size:14.5px;font-weight:700;color:var(--muted);-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .tab[aria-selected=true]{background:var(--tint);color:var(--ink)}
 section[hidden]{display:none!important}
 section.view{display:flex;flex-direction:column;gap:16px}
@@ -160,9 +195,9 @@ section.view{display:flex;flex-direction:column;gap:16px}
   <!-- SCANNER -->
   <section class="view" id="v-scan">
     <div class="card">
-      <div class="row">
+      <div class="scanrow">
         <button class="btn primary" id="btn-scan" type="button">Scanner un code-barres</button>
-        <button class="btn" id="btn-photo" type="button">Depuis une photo</button>
+        <button class="btn" id="btn-photo" type="button">Photo</button>
         <input type="file" id="file" accept="image/*" hidden>
       </div>
       <div id="reader" hidden><video id="video" playsinline muted autoplay></video></div>
@@ -171,12 +206,12 @@ section.view{display:flex;flex-direction:column;gap:16px}
         <input id="code" inputmode="numeric" autocomplete="off" placeholder="Ou tapez le code" aria-label="Code-barres">
         <button class="btn" type="submit">Chercher</button>
       </form>
-      <div class="row small"><span class="muted">Essayer :</span>
+      <div class="row small hide-res"><span class="muted">Essayer :</span>
         <button class="chipbtn" type="button" data-code="3017620422003">Nutella</button>
         <button class="chipbtn" type="button" data-code="5449000000996">Coca-Cola</button>
       </div>
       <div id="status" class="msg" hidden role="status"></div>
-      <p class="muted small" id="engine"></p>
+      <p class="muted small hide-res" id="engine"></p>
     </div>
     <div id="result"></div>
   </section>
@@ -394,6 +429,17 @@ function verdict(s){
 /* ---------- Affichage produit ---------- */
 function safeImg(u){ try{const x=new URL(u); return x.protocol==="https:" && /(^|\.)open(food|beauty|products|petfood)facts\.org$/.test(x.hostname) ? x.href : null}catch(e){return null} }
 function fmt(v,unit){ return v==null||v===""||isNaN(Number(v)) ? "–" : (Math.round(Number(v)*10)/10).toString().replace(".",",")+" "+unit; }
+function rhead(p, score, vt, vc, tag){
+  const img = safeImg(p.image_front_small_url);
+  const name = p.product_name_fr || p.product_name || "Produit sans nom";
+  return `<div class="rhead">
+      ${img?`<img src="${esc(img)}" alt="">`:'<div class="ph"></div>'}
+      <div style="min-width:0"><div class="name">${esc(name)}</div>
+        <div class="sub">${tag?`<b>${esc(tag)}</b> · `:""}${esc([p.brands,p.quantity].filter(Boolean).join(" · "))}</div>
+        <div class="vd" style="color:${vc}">${esc(vt)}</div></div>
+      <div class="spill" style="background:${score==null?"var(--none)":vc}" role="img" aria-label="Note ${score==null?"indisponible":score+" sur 100"}"><div>${score==null?"?":score}<small>sur 100</small></div></div>
+    </div>`;
+}
 function renderProduct(p, isSample){
   if(p._src && p._src!=="food") return renderCosmetic(p);
   const a = analyse(p, settings.w);
@@ -418,37 +464,29 @@ function renderProduct(p, isSample){
     const col = val==null?"var(--none)":verdict(val)[1];
     return `<div class="bar"><span>${nm}</span><i><b style="width:${val==null?0:val}%;background:${col}"></b></i><span>${val==null?"–":val}</span></div>`;
   }).join("");
+  const keyHits = fc ? fc.hits.slice(0,3) : [];
   $("#result").innerHTML = `
-  <div class="card">
-    ${isSample?'<div><span class="tag">Exemple enregistré dans la page</span></div>':""}
-    <div class="prod">
-      ${img?`<img src="${esc(img)}" alt="">`:'<div class="ph"></div>'}
-      <div><div class="name">${esc(name)}</div><div class="muted small">${esc([p.brands,p.quantity].filter(Boolean).join(" · "))}</div><div class="muted small">${esc(p.code||"")}</div></div>
+  <div class="card res">
+    ${rhead(p, a.score, vt, vc, isSample?"Exemple":"")}
+    <div class="minib">
+      <span>Nutri-Score<b style="color:${a.grade?gColor[a.grade]:"var(--none)"}">${a.grade?a.grade.toUpperCase():"?"}</b></span>
+      <span>NOVA<b style="color:${a.nova?nColor[a.nova]:"var(--none)"}">${a.nova||"?"}</b></span>
+      <span>Bio<b style="color:${a.organic?"var(--good)":"var(--none)"}">${a.organic?"oui":"non"}</b></span>
+      <span>Green-Score<b style="color:${ecoOk?gColor[eco]:"var(--none)"}">${ecoOk?eco.toUpperCase():"?"}</b></span>
+      <span>Additifs<b>${a.adds.length}</b></span>
     </div>
-    <div class="scorebox">
-      <div class="ring" role="img" aria-label="Note ${a.score==null?"indisponible":a.score+" sur 100"}">
-        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="var(--tint)" stroke-width="9"/><circle cx="50" cy="50" r="44" fill="none" stroke="${vc}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${off}"/></svg>
-        <div class="n"><div>${a.score==null?"?":a.score}<small>sur 100</small></div></div>
-      </div>
-      <div class="bars"><div class="verdict" style="color:${vc}">${vt}</div>${bars}</div>
-    </div>
-    ${a.missing.length?`<p class="small muted">Note partielle : ${esc(a.missing.join(", ").toLowerCase())} absent${a.missing.length>1?"s":""} de la fiche Open Food Facts.</p>`:""}
-    ${a.capped?'<p class="small muted">Note plafonnée à 49 : un additif classé « à éviter » est présent.</p>':""}
+    ${a.missing.length||a.capped?`<p class="line">${a.missing.length?`Note partielle : ${esc(a.missing.join(", ").toLowerCase())} absent${a.missing.length>1?"s":""}. `:""}${a.capped?"Plafonnée à 49 : additif « à éviter ».":""}</p>`:""}
     ${alerts.map(([t,c])=>`<div class="alert ${c}">${t}</div>`).join("")}
-    ${fam?`<div class="fam"><h3>Dans sa famille : ${esc(fam.title)}</h3>
-      <div class="famv" style="color:${fc.verdict[1]}">${fc.verdict[0]}</div>
-      ${fc.hits.length||fc.miss.length?`<ul class="list">${fc.hits.map(h=>`<li><span class="dot ${DOT[h.t]}"></span><span>${h.m}</span></li>`).join("")}${fc.miss.map(m=>`<li><span class="dot lvi"></span><span class="muted">${m}</span></li>`).join("")}</ul>`:""}
-      <button class="btn" type="button" data-guide="${fam.id}">Voir la fiche « ${esc(fam.title)} »</button></div>`:""}
-    ${p.code && (p.categories_tags||[]).length ? `<div id="alts"><button class="btn" type="button" data-alts="1">Voir des produits mieux notés dans la même catégorie</button></div>`:""}
-    <div class="badges">
-      <div class="badge"><b style="color:${a.grade?gColor[a.grade]:"var(--none)"}">${a.grade?a.grade.toUpperCase():"?"}</b><span>Nutri-Score</span></div>
-      <div class="badge"><b style="color:${a.nova?nColor[a.nova]:"var(--none)"}">${a.nova||"?"}</b><span>NOVA</span></div>
-      <div class="badge"><b style="color:${a.organic?"var(--good)":"var(--none)"}">${a.organic?"Oui":"Non"}</b><span>Bio</span></div>
-      <div class="badge"><b style="color:${ecoOk?gColor[eco]:"var(--none)"}">${ecoOk?eco.toUpperCase():"?"}</b><span>Green-Score</span></div>
-    </div>
-    <div><h3>Additifs (${a.adds.length})</h3></div>
-    ${a.adds.length?`<ul class="list">${a.adds.map(x=>`<li><span class="dot lv${x.level}"></span><span><b>${x.code.toUpperCase()}</b> ${esc(x.name)}<br><span class="muted small">${x.known?LV[x.level]:"Compté comme risque limité"}</span></span></li>`).join("")}</ul>`:'<p class="small muted">Aucun additif déclaré sur la fiche.</p>'}
-    <details><summary>Valeurs pour 100 g</summary>
+    ${fam?`<div class="famline"><div><b>${esc(fam.title)}</b> · <span style="color:${fc.verdict[1]};font-weight:700">${fc.verdict[0]}</span></div>
+      ${keyHits.length?`<ul class="list">${keyHits.map(h=>`<li><span class="dot ${DOT[h.t]}"></span><span>${h.m}</span></li>`).join("")}</ul>`:""}</div>`:""}
+    ${fam && (fc.hits.length>3||fc.miss.length)?`<details class="sec"><summary>Tous les critères de la famille<span class="cnt">${fc.hits.length+fc.miss.length}</span></summary>
+      <ul class="list">${fc.hits.map(h=>`<li><span class="dot ${DOT[h.t]}"></span><span>${h.m}</span></li>`).join("")}${fc.miss.map(m=>`<li><span class="dot lvi"></span><span class="muted">${m}</span></li>`).join("")}</ul>
+      <button class="btn" type="button" data-guide="${fam.id}">Voir la fiche « ${esc(fam.title)} »</button></details>`:""}
+    <details class="sec"><summary>Détail de la note</summary><div class="bars">${bars}</div></details>
+    <details class="sec"><summary>Additifs<span class="cnt">${a.adds.length}</span></summary>
+      ${a.adds.length?`<ul class="list">${a.adds.map(x=>`<li><span class="dot lv${x.level}"></span><span><b>${x.code.toUpperCase()}</b> ${esc(x.name)}<br><span class="muted small">${x.known?LV[x.level]:"Compté comme risque limité"}</span></span></li>`).join("")}</ul>`:'<p class="small muted">Aucun additif déclaré sur la fiche.</p>'}</details>
+    ${p.code && (p.categories_tags||[]).length ? `<details class="sec" data-alts><summary>Mieux notés dans la même catégorie</summary><div id="alts"><p class="small muted">Recherche…</p></div></details>`:""}
+    <details class="sec"><summary>Valeurs pour 100 g</summary>
       <table>
         <tr><td>Énergie</td><td>${fmt(n["energy-kcal_100g"],"kcal")}</td></tr>
         <tr><td>Matières grasses</td><td>${fmt(n.fat_100g,"g")}</td></tr>
@@ -459,9 +497,10 @@ function renderProduct(p, isSample){
         <tr><td>Sel</td><td>${fmt(n.salt_100g,"g")}</td></tr>
       </table>
     </details>
-    <details><summary>Ingrédients</summary><p class="ingr">${esc(p.ingredients_text_fr||p.ingredients_text||"Liste absente de la fiche.")}</p></details>
-    ${p.code?`<a class="small" href="https://fr.openfoodfacts.org/produit/${encodeURIComponent(p.code)}" target="_blank" rel="noopener">Voir ou corriger la fiche sur Open Food Facts</a>`:""}
+    <details class="sec"><summary>Ingrédients</summary><p class="ingr">${esc(p.ingredients_text_fr||p.ingredients_text||"Liste absente de la fiche.")}</p>
+    ${p.code?`<a class="small" href="https://fr.openfoodfacts.org/produit/${encodeURIComponent(p.code)}" target="_blank" rel="noopener">Voir ou corriger la fiche sur Open Food Facts</a>`:""}</details>
   </div>`;
+  document.body.classList.add("has-result");
   return a;
 }
 
@@ -479,46 +518,44 @@ function renderCosmetic(p){
   const kind = a.fam ? (a.fam.t==="menager"?"Ménager":"Cosmétique") : (p._src==="product"?"Produit ménager ou autre":"Cosmétique");
   const offAll = a.hits.filter(h=>h.g.off).sort((x,y)=>y.g.off[0]-x.g.off[0]);
   const nLft = a.lftHits.filter(h=>h.g.lft[0]===2).length;
-  const lftBlock = settings.lft ? `<div class="lftbox"><h3>Selon La Famille Tortue</h3>
+  const lftBlock = settings.lft ? `<div class="lftbox">
       ${a.produit?`<p class="small"><b>Produit analysé dans ses comparatifs : ${esc(a.produit[2])}.</b> <a href="${lftUrl(a.produit[3])}" target="_blank" rel="noopener">Lire l'article</a></p>`:""}
       ${a.marque?`<p class="small"><b>Marque analysée : ${esc(a.marque[1])}.</b> <a href="${lftUrl(a.marque[2])}" target="_blank" rel="noopener">Lire son analyse</a></p>`:""}
       ${a.lftHits.length?`<ul class="list">${a.lftHits.map(h=>`<li><span class="dot ${h.g.lft[0]===2?"lv-lft":"lv2"}"></span><span class="ingr-hit"><span><b>${h.g.lft[0]===2?"Déconseillé":"À limiter"}</b> : ${esc(h.g.nom)}</span><span class="muted">${esc(h.items.join(", "))} — ${esc(h.g.lft[1])} <a href="${lftUrl(h.g.lft[2])}" target="_blank" rel="noopener">Son article</a></span></span></li>`).join("")}</ul>`
         : a.toks.length?`<p class="small">Aucun ingrédient de sa liste « non clean » repéré dans la composition.</p>`:""}
       ${a.lftOk.length?`<ul class="list">${a.lftOk.map(h=>`<li><span class="dot lv-ok"></span><span class="ingr-hit"><span><b>Apprécié</b> : ${esc(h.g.nom)}</span><span class="muted">${esc(h.items.join(", "))}</span></span></li>`).join("")}</ul>`:""}
     </div>` : "";
-  const offBlock = offAll.length ? `<div><h3>Ce que dit la réglementation</h3></div><ul class="list">${offAll.map(h=>`<li><span class="dot ${OFFLV[h.g.off[0]][1]}"></span><span class="ingr-hit"><span><b>${OFFLV[h.g.off[0]][0]}</b> : ${esc(h.g.nom)}</span><span class="muted">${esc(h.g.off[1])}<br>${srcLinks(h.g.off[2])}</span></span></li>`).join("")}</ul>`
+  const offBlock = offAll.length ? `<ul class="list">${offAll.map(h=>`<li><span class="dot ${OFFLV[h.g.off[0]][1]}"></span><span class="ingr-hit"><span><b>${OFFLV[h.g.off[0]][0]}</b> : ${esc(h.g.nom)}</span><span class="muted">${esc(h.g.off[1])}<br>${srcLinks(h.g.off[2])}</span></span></li>`).join("")}</ul>`
     : a.toks.length ? `<p class="small muted">Aucun ingrédient interdit, restreint ou sous surveillance repéré dans la base de l'appli.</p>` : "";
   const fam = a.fam;
-  const famBlock = fam ? `<div class="fam"><h3>${esc(fam.title)} : alternatives de La Famille Tortue</h3>
+  const famBlock = fam ? `<div class="fam"><h3>${esc(fam.title)}</h3>
       <ul class="plain small">${fam.tips.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>
       <ul class="alts">${fam.alts.map(x=>`<li><b>${esc(x[0])}</b> — ${esc(x[1])}${x[3]?'<span class="ptag">partenariat déclaré</span>':""} · <a href="${lftUrl(x[2])}" target="_blank" rel="noopener">article</a></li>`).join("")}</ul>
       <p class="muted small">Recommandations de La Famille Tortue, dont certaines marques avec lesquelles elle déclare un partenariat commercial.</p>
     </div>` : "";
+  const chips = [
+    ...a.offHits.filter(h=>h.g.off[0]>=2).map(h=>`<span class="chip reg">${esc(h.g.nom)}</span>`),
+    ...(settings.lft?a.lftHits.filter(h=>!(h.g.off&&h.g.off[0]>=2)).map(h=>`<span class="chip ${h.g.lft[0]===2?"lft":"lim"}">${esc(h.g.nom)}</span>`):[]),
+    ...(settings.lft?a.lftOk.map(h=>`<span class="chip ok">${esc(h.g.nom)}</span>`):[])
+  ];
   $("#result").innerHTML = `
-  <div class="card">
-    <div class="prod">
-      ${img?`<img src="${esc(img)}" alt="">`:'<div class="ph"></div>'}
-      <div><span class="tag">${esc(kind)}</span><div class="name">${esc(name)}</div><div class="muted small">${esc([p.brands,p.quantity].filter(Boolean).join(" · "))}</div><div class="muted small">${esc(p.code||"")}</div></div>
-    </div>
-    <div class="scorebox">
-      <div class="ring" role="img" aria-label="Note ${a.score==null?"indisponible":a.score+" sur 100"}">
-        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="var(--tint)" stroke-width="9"/><circle cx="50" cy="50" r="44" fill="none" stroke="${vc}" stroke-width="9" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${off}"/></svg>
-        <div class="n"><div>${a.score==null?"?":a.score}<small>sur 100</small></div></div>
-      </div>
-      <div class="bars"><div class="verdict" style="color:${vc}">${vt}</div>
-        <div class="small muted">${a.toks.length} ingrédients lus${settings.lft?` · ${nLft} déconseillé${nLft>1?"s":""} par La Famille Tortue`:""} · ${a.offHits.length} point${a.offHits.length>1?"s":""} réglementaire${a.offHits.length>1?"s":""}</div></div>
-    </div>
-    ${a.toks.length?"":`<div class="alert">Liste d'ingrédients absente de la fiche : impossible d'analyser la composition. Vous pouvez la compléter sur ${esc(src[2])}.</div>`}
-    ${a.doubtful?`<div class="alert red">La liste d'ingrédients de cette fiche semble mal lue ou incomplète (${a.toks.length} ingrédient${a.toks.length>1?"s":""} lu${a.toks.length>1?"s":""}, ${a.bad.length} illisible${a.bad.length>1?"s":""}). Des ingrédients peuvent échapper à l'analyse. Vous pouvez la corriger sur ${esc(src[2])} (lien en bas), l'appli en tiendra compte au prochain scan.</div>`:""}
-    ${a.interdit?`<div class="alert red">Un ingrédient de la liste est interdit aujourd'hui. Le produit peut être ancien : vérifiez l'emballage.</div>`:""}
-    ${lftBlock}
-    ${offBlock}
-    ${famBlock}
-    ${p.code && (p.categories_tags||[]).length ? `<div id="alts"><button class="btn" type="button" data-alts="1">Voir des produits mieux notés dans la même catégorie</button></div>`:""}
-    <details><summary>Ingrédients</summary><p class="ingr">${esc(inciText(p)||"Liste absente de la fiche.")}</p></details>
-    ${p.code?`<a class="small" href="${src[1]}/${src[3]}/${encodeURIComponent(p.code)}" target="_blank" rel="noopener">Voir ou corriger la fiche sur ${esc(src[2])}</a>`:""}
-    <p class="muted small">Note indicative de l'appli : elle retire des points pour les ingrédients restreints ou sous surveillance${settings.lftScore&&settings.lft?" et pour ceux que La Famille Tortue déconseille":""}. Elle ne remplace pas un avis médical.</p>
+  <div class="card res">
+    ${rhead(p, a.score, vt, vc, kind)}
+    <p class="line">${a.toks.length} ingrédients lus${settings.lft?` · ${nLft} déconseillé${nLft>1?"s":""} par La Famille Tortue`:""} · ${a.offHits.length} point${a.offHits.length>1?"s":""} réglementaire${a.offHits.length>1?"s":""}</p>
+    ${a.toks.length?"":`<div class="alert">Liste d'ingrédients absente de la fiche : composition non analysée. Vous pouvez la compléter sur ${esc(src[2])} (lien dans « Ingrédients »).</div>`}
+    ${a.doubtful?`<div class="alert red">Liste d'ingrédients mal lue ou incomplète (${a.toks.length} lus, ${a.bad.length} illisible${a.bad.length>1?"s":""}) : des ingrédients peuvent échapper à l'analyse. Corrigez-la sur ${esc(src[2])} (lien dans « Ingrédients »).</div>`:""}
+    ${a.interdit?`<div class="alert red">Contient un ingrédient interdit aujourd'hui : le produit est peut-être ancien.</div>`:""}
+    ${chips.length?`<div class="chips">${chips.join("")}</div>`:""}
+    ${settings.lft&&(a.produit||a.marque)?`<p class="line">${a.produit?`La Famille Tortue a noté ce produit <b>${esc(a.produit[2])}</b> · <a href="${lftUrl(a.produit[3])}" target="_blank" rel="noopener">article</a>`:`Marque analysée par La Famille Tortue : <b>${esc(a.marque[1])}</b> · <a href="${lftUrl(a.marque[2])}" target="_blank" rel="noopener">article</a>`}</p>`:""}
+    ${settings.lft?`<details class="sec"><summary>Selon La Famille Tortue<span class="cnt">${a.lftHits.length}</span></summary>${lftBlock}</details>`:""}
+    ${offAll.length?`<details class="sec"><summary>Réglementation<span class="cnt">${offAll.length}</span></summary>${offBlock}</details>`:""}
+    ${fam?`<details class="sec"><summary>Alternatives de La Famille Tortue<span class="cnt">${fam.alts.length}</span></summary>${famBlock}</details>`:""}
+    ${p.code && (p.categories_tags||[]).length ? `<details class="sec" data-alts><summary>Mieux notés dans la même catégorie</summary><div id="alts"><p class="small muted">Recherche…</p></div></details>`:""}
+    <details class="sec"><summary>Ingrédients<span class="cnt">${a.toks.length}</span></summary><p class="ingr">${esc(inciText(p)||"Liste absente de la fiche.")}</p>
+      ${p.code?`<a class="small" href="${src[1]}/${src[3]}/${encodeURIComponent(p.code)}" target="_blank" rel="noopener">Voir ou corriger la fiche sur ${esc(src[2])}</a>`:""}</details>
+    <p class="muted small">Note indicative de l'appli${settings.lftScore&&settings.lft?", qui suit la logique de La Famille Tortue":""}. Détail du calcul dans les Réglages.</p>
   </div>`;
+  document.body.classList.add("has-result");
   return a;
 }
 
@@ -540,7 +577,7 @@ async function loadAlternatives(p){
     const list = (j.products||[]).filter(x=>x.code && x.code!==p.code && (x.product_name_fr||x.product_name))
       .map(x=>{ x._src = p._src||"food"; return {x, s:scoreOf(x)}; })
       .filter(o=>o.s!=null && (base==null || o.s>base)).sort((a,b)=>b.s-a.s).slice(0,6);
-    box.innerHTML = list.length ? `<div class="fam"><h3>Mieux notés dans la même catégorie</h3><ul class="alts">${list.map(o=>`<li><button type="button" data-code="${esc(o.x.code)}"><span class="pill" style="background:${verdict(o.s)[1]};width:40px;height:40px">${o.s}</span><span><b>${esc(o.x.product_name_fr||o.x.product_name)}</b><br><span class="muted small">${esc(o.x.brands||"")}</span></span></button></li>`).join("")}</ul><p class="muted small">Calculé avec la note de l'appli sur les produits les plus scannés de la catégorie${food?"":" (fiches avec liste d'ingrédients)"}.</p></div>`
+    box.innerHTML = list.length ? `<div><ul class="alts">${list.map(o=>`<li><button type="button" data-code="${esc(o.x.code)}"><span class="pill" style="background:${verdict(o.s)[1]};width:40px;height:40px">${o.s}</span><span><b>${esc(o.x.product_name_fr||o.x.product_name)}</b><br><span class="muted small">${esc(o.x.brands||"")}</span></span></button></li>`).join("")}</ul><p class="muted small">Calculé avec la note de l'appli sur les produits les plus scannés de la catégorie${food?"":" (fiches avec liste d'ingrédients)"}.</p></div>`
       : '<p class="small muted">Aucun produit mieux noté trouvé dans cette catégorie.</p>';
   }catch(e){ box.innerHTML = '<p class="small muted">La recherche d\'alternatives n\'a pas abouti. Réessayez plus tard.</p>'; }
 }
@@ -765,7 +802,14 @@ function show(view){
 }
 
 /* ---------- Événements ---------- */
-document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>show(t.dataset.view)));
+$("#result").addEventListener("toggle", e=>{
+  const d = e.target; if(d.matches && d.matches("details[data-alts]") && d.open && !d.dataset.loaded){ d.dataset.loaded="1"; loadAlternatives(current); }
+}, true);
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>{
+  const already = t.dataset.view==="scan" && !$("#v-scan").hidden;
+  show(t.dataset.view);
+  if(already && $("#reader").hidden) startScan();
+}));
 $("#btn-scan").addEventListener("click",startScan);
 $("#btn-stop").addEventListener("click",()=>{stopScan();say("")});
 $("#btn-photo").addEventListener("click",()=>$("#file").click());
@@ -773,7 +817,6 @@ $("#file").addEventListener("change",e=>{scanPhoto(e.target.files[0]); e.target.
 $("#form-code").addEventListener("submit",e=>{e.preventDefault(); lookup($("#code").value);});
 document.querySelectorAll(".chipbtn").forEach(b=>b.addEventListener("click",()=>lookup(b.dataset.code)));
 $("#result").addEventListener("click",e=>{
-  if(e.target.closest("[data-alts]")){ loadAlternatives(current); return; }
   const c=e.target.closest("[data-code]"); if(c){ lookup(c.dataset.code); return; }
   const b=e.target.closest("[data-guide]"); if(!b) return;
   show("guides"); $("#gsearch").value=""; renderGuides(); const d=document.querySelector("#g-"+b.dataset.guide+" details"); if(d){d.open=true; d.scrollIntoView({block:"start"});}

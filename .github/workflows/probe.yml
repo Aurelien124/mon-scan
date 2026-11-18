@@ -5,14 +5,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          H='Origin: https://aurelien124.github.io'
-          for u in \
-            "https://search.openfoodfacts.org/search?q=pain%20d%27epices&langs=fr&page_size=3&fields=code,product_name,brands,nutriscore_grade,image_front_small_url" \
-            "https://world.openfoodfacts.org/cgi/search.pl?search_terms=pain%20d%27epices&search_simple=1&action=process&json=1&page_size=3&sort_by=unique_scans_n&fields=code,product_name,brands" \
-            "https://world.openbeautyfacts.org/cgi/search.pl?search_terms=gel%20douche%20arbre%20vert&search_simple=1&action=process&json=1&page_size=3&fields=code,product_name,brands" \
-            "https://world.openproductsfacts.org/cgi/search.pl?search_terms=lessive&search_simple=1&action=process&json=1&page_size=3&fields=code,product_name,brands"; do
-            echo "=== $u"
-            curl -s -m 30 -A "MonScan/1.0" -H "$H" -D /tmp/h -o /tmp/b -w "HTTP %{http_code} en %{time_total}s\n" "$u"
-            grep -i "access-control-allow-origin" /tmp/h || echo "pas d'en-tête CORS"
-            head -c 900 /tmp/b; echo
-          done
+          O='Origin: https://aurelien124.github.io'
+          echo "=== OPTIONS search-a-licious"
+          curl -s -m 20 -X OPTIONS -H "$O" -H "Access-Control-Request-Method: GET" -D - -o /dev/null "https://search.openfoodfacts.org/search?q=nutella" | grep -i "^HTTP\|access-control"
+          echo "=== GET search-a-licious en-têtes complets"
+          curl -s -m 20 -H "$O" -D - -o /dev/null "https://search.openfoodfacts.org/search?q=nutella&page_size=1" | head -20
+          echo "=== POST search-a-licious"
+          curl -s -m 20 -X POST -H "$O" -H "Content-Type: application/json" -d '{"q":"nutella","page_size":1}' -D - -o /tmp/b "https://search.openfoodfacts.org/search" | grep -i "^HTTP\|access-control"; head -c 200 /tmp/b; echo
+          for d in world fr; do for i in 1 2 3; do
+            echo "=== cgi $d essai $i"
+            curl -s -m 30 -H "$O" -D /tmp/h -o /tmp/b -w "HTTP %{http_code} en %{time_total}s\n" "https://$d.openfoodfacts.org/cgi/search.pl?search_terms=pain+d+epices&search_simple=1&action=process&json=1&page_size=2&fields=code,product_name"
+            grep -i "access-control-allow-origin" /tmp/h; head -c 200 /tmp/b | tr -d '\n'; echo; sleep 8
+          done; done

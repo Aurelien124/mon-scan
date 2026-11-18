@@ -10,20 +10,25 @@ jobs:
           npm i -s playwright@1 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
           cat > t.mjs <<'JS'
           import { chromium, devices } from "playwright";
-          const codes = "3251241041667 8710847972720 3574661680996 3574661701868 8718951087569 3181730142042 8710447284124 3574661065427 4005808920679 3600523232482 3574661319216 3600523232468 3504750002019 3600542525794".split(" ");
+          const codes = "3251241041667 8710847972720 3574661680996 3574661701868".split(" ");
           const b = await chromium.launch();
-          const ctx = await b.newContext({...devices["iPhone 13"]});
-          const pg = await ctx.newPage();
-          pg.on("console", m => { if(m.type()==="error") console.log("console:", m.text().slice(0,200)); });
-          pg.on("requestfailed", r => console.log("échec réseau:", r.url().slice(0,120), r.failure()?.errorText));
-          await pg.goto("https://aurelien124.github.io/mon-scan/?t="+Date.now(), {waitUntil:"networkidle"});
-          for(const c of codes){
-            const t0 = Date.now();
-            await pg.fill("#code", c); await pg.press("#code", "Enter");
-            await pg.waitForFunction(() => !/^Recherche du produit/.test(document.querySelector("#status")?.textContent||""), null, {timeout:30000}).catch(()=>{});
-            await pg.waitForTimeout(300);
-            const r = await pg.evaluate(() => (document.querySelector("#result .rhead")?.innerText || "AUCUN RÉSULTAT — "+document.querySelector("#status")?.textContent).replace(/\n/g," | ").slice(0,140));
-            console.log(c, ((Date.now()-t0)/1000).toFixed(1)+"s", r);
+          for(const sw of ["allow","block"]){
+            console.log("=== service worker:", sw);
+            const ctx = await b.newContext({...devices["iPhone 13"], serviceWorkers: sw});
+            const pg = await ctx.newPage();
+            const t = new Map();
+            ctx.on("request", r => { if(/facts\.org\/api/.test(r.url())) t.set(r, Date.now()); });
+            ctx.on("requestfinished", async r => { if(t.has(r)){ const s = await r.response(); console.log("  ", ((Date.now()-t.get(r))/1000).toFixed(1)+"s", s?s.status():"?", r.url().split("?")[0].replace("https://","")); } });
+            ctx.on("requestfailed", r => { if(t.has(r)) console.log("   ÉCHEC", ((Date.now()-t.get(r))/1000).toFixed(1)+"s", r.failure()?.errorText, r.url().split("?")[0].replace("https://","")); });
+            await pg.goto("https://aurelien124.github.io/mon-scan/?t="+Date.now(), {waitUntil:"networkidle"});
+            await pg.waitForTimeout(1500);
+            for(const c of codes){
+              const t0 = Date.now();
+              await pg.evaluate(c => lookup(c), c);
+              const r = await pg.evaluate(() => (document.querySelector("#result .rhead")?.innerText || "AUCUN — "+document.querySelector("#status")?.textContent).replace(/\n/g," | ").slice(0,90));
+              console.log(c, "total", ((Date.now()-t0)/1000).toFixed(1)+"s", r);
+            }
+            await ctx.close();
           }
           await b.close();
           JS

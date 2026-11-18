@@ -182,6 +182,8 @@ async function search(base, tag, food, brand){
               ad:(p.additives_tags||[]).map(x=>x.replace(/^en:/,"")), bio:(p.labels_tags||[]).some(x=>ORGANIC.includes(x))?1:0};
       }else{
         p._src = base;
+        // Colorations et hennés exclus des classements (fiches parfois rangées en shampoing).
+        if(/\bhenn|coloration|teinture|colorant capillaire/i.test(name+" "+(p.generic_name_fr||"")) || (findCFam(p)||{}).id==="coloration") continue;
         const r = analyseCosmetic(p, {lft:true, lftScore:true});
         if(!r.toks.length || r.doubtful) continue; // liste d'ingrédients absente ou mal lue
         s = r.score; k = r.offHits.length+r.lftHits.length;

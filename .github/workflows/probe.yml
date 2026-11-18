@@ -1,0 +1,18 @@
+name: Sonde recherche (temporaire)
+on: workflow_dispatch
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          H='Origin: https://aurelien124.github.io'
+          for u in \
+            "https://search.openfoodfacts.org/search?q=pain%20d%27epices&langs=fr&page_size=3&fields=code,product_name,brands,nutriscore_grade,image_front_small_url" \
+            "https://world.openfoodfacts.org/cgi/search.pl?search_terms=pain%20d%27epices&search_simple=1&action=process&json=1&page_size=3&sort_by=unique_scans_n&fields=code,product_name,brands" \
+            "https://world.openbeautyfacts.org/cgi/search.pl?search_terms=gel%20douche%20arbre%20vert&search_simple=1&action=process&json=1&page_size=3&fields=code,product_name,brands" \
+            "https://world.openproductsfacts.org/cgi/search.pl?search_terms=lessive&search_simple=1&action=process&json=1&page_size=3&fields=code,product_name,brands"; do
+            echo "=== $u"
+            curl -s -m 30 -A "MonScan/1.0" -H "$H" -D /tmp/h -o /tmp/b -w "HTTP %{http_code} en %{time_total}s\n" "$u"
+            grep -i "access-control-allow-origin" /tmp/h || echo "pas d'en-tête CORS"
+            head -c 900 /tmp/b; echo
+          done

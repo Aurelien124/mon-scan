@@ -8,7 +8,7 @@ Appli web personnelle de scan (aliments, cosmétiques, produits ménagers ; un s
 - `kb.js` : la base de connaissances (`KB`, une entrée par famille d'aliments) et le `JOURNAL` des mises à jour. C'est le fichier à faire évoluer.
 - `kbc.js` : base cosmétiques et ménager (`INGC` familles d'ingrédients, `SRC` sources officielles, `CFAM` familles de produits avec alternatives, analyses de La Famille Tortue, `JOURNAL_C`).
 - `cosmo.js` : moteur d'analyse des listes INCI (Open Beauty Facts, Open Products Facts). Pas de contenu.
-- `top.json` : Top 10 par famille (onglet « Top 10 » et « Mieux notés »). Généré chaque lundi par `.github/workflows/top.yml`, qui lance `scripts/top.js` (requêtes Open Food/Beauty/Products Facts, notes calculées avec le moteur de l'appli). Ne pas le modifier à la main ; pour ajouter une famille, compléter la liste `FAM` de `scripts/top.js`. Le robot pousse sur `main` : faire `git pull --rebase` avant de pousser.
+- `top.json` et `search.json` : Top 10 par famille (onglet « Top 10 » et « Mieux notés ») et index de recherche par nom. Généré chaque lundi par `.github/workflows/top.yml`, qui lance `scripts/top.js` (requêtes Open Food/Beauty/Products Facts, notes calculées avec le moteur de l'appli). Ne pas le modifier à la main ; pour ajouter une famille, compléter la liste `FAM` de `scripts/top.js`. Le robot pousse sur `main` : faire `git pull --rebase` avant de pousser.
 - `tests/check.js` : contrôle de cohérence de `kb.js` et `kbc.js`. À lancer avant tout commit : `node tests/check.js`.
 - `muscu/` : appli séparée « Ma Muscu » (suivi de musculation), en ligne sur https://aurelien124.github.io/mon-scan/muscu/. Sans lien avec Mon Scan : la mise à jour de la base de connaissances n'y touche pas.
 

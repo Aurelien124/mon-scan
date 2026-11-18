@@ -129,10 +129,14 @@ async function search(base, tag, food, brand){
 (async()=>{
   const out = {date:new Date().toISOString().slice(0,10), fam:[]};
   let prev = null; try{ prev = JSON.parse(fs.readFileSync(path.join(ROOT,"top.json"),"utf8")); }catch(e){}
+  // Index de recherche par nom : tous les produits notés, par famille.
+  const idx = {date:out.date, fam:{}};
+  let prevIdx = null; try{ prevIdx = JSON.parse(fs.readFileSync(path.join(ROOT,"search.json"),"utf8")); }catch(e){}
+  const keepIdx = id => { if(prevIdx && prevIdx.fam[id]) idx.fam[id] = prevIdx.fam[id]; };
   const ONLY = (process.env.ONLY||"").split(",").map(x=>x.trim()).filter(Boolean);
   for(const [id,g,t,base,tags] of FAM){
     const food = base==="food";
-    if(ONLY.length && !ONLY.includes(id)){ const old = prev && prev.fam.find(f=>f.id===id); if(old) out.fam.push(old); continue; }
+    if(ONLY.length && !ONLY.includes(id)){ const old = prev && prev.fam.find(f=>f.id===id); if(old) out.fam.push(old); keepIdx(id); continue; }
     let prods = null, used = null;
     for(const tag of tags){
       const r = await search(base, tag, food); await sleep(7000);
@@ -144,6 +148,7 @@ async function search(base, tag, food, brand){
       const old = prev && prev.fam.find(f=>f.id===id);
       console.log("ÉCHEC", id, old?"(liste précédente conservée)":"");
       if(old) out.fam.push(old);
+      keepIdx(id);
       continue;
     }
     if(!food){
@@ -184,9 +189,12 @@ async function search(base, tag, food, brand){
     }
     items.sort((x,y)=>y.s-x.s || (y.fk||0)-(x.fk||0) || x._k-y._k);
     items.forEach(it=>delete it._k);
+    idx.fam[id] = {src:base, l:items.map(it=>[it.c, it.n, it.b, it.s])};
     console.log(id.padEnd(16), used.padEnd(34), String(prods.length).padStart(3), "lus,", String(items.length).padStart(3), "notés, meilleur", items[0]?items[0].s:"-");
     out.fam.push(Object.assign({id, g, t, src:base, tag:used, n:items.length, p:items.slice(0,15)}, NOTE[id]?{note:NOTE[id]}:{}));
   }
   fs.writeFileSync(path.join(ROOT,"top.json"), JSON.stringify(out));
+  fs.writeFileSync(path.join(ROOT,"search.json"), JSON.stringify(idx));
+  console.log("search.json :", Object.values(idx.fam).reduce((t,f)=>t+f.l.length,0), "produits");
   console.log("top.json :", out.fam.length, "familles,", Math.round(fs.statSync(path.join(ROOT,"top.json")).size/1024), "Ko");
 })();

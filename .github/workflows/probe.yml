@@ -1,0 +1,11 @@
+name: Sonde (temporaire)
+on: workflow_dispatch
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          for i in 1 2 3; do for c in 00000859 3537090020139 3770005798093 8718951543553 3283950911184; do
+            curl -s -m 30 -o /tmp/b -w "$c HTTP %{http_code} en %{time_total}s " "https://world.openbeautyfacts.org/api/v2/product/$c.json?lc=fr&fields=code,product_name,product_type"; head -c 120 /tmp/b; echo
+          done; sleep 5; done
+          curl -s -m 30 -o /tmp/b -w "OFF 3017620422003 HTTP %{http_code} en %{time_total}s\n" "https://world.openfoodfacts.org/api/v2/product/3017620422003.json?fields=code"

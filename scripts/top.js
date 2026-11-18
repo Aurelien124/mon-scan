@@ -32,6 +32,19 @@ const CMAP = {douche:"douche", savon:"douche", shampoing:"shampoing", "apres-sha
 const PLUS = {dentifrice:["L'Arbre Vert"], douche:["L'Arbre Vert"], lessive:["L'Arbre Vert"], vaisselle:["L'Arbre Vert"]};
 // Marques cherchées dans toutes les familles cosmétiques, et dont tous les produits vont dans l'index de recherche.
 const PLUS_COSMETO = ["Aroma-Zone"];
+// Le nom du produit doit correspondre à la famille (des fiches sont mal rangées dans les bases).
+const NAMERE = {
+  douche:/douche|shower|lavant|wash|bain/, savon:/savon|soap|pain (de toilette|surgras|dermatologique)/, shampoing:/shamp/,
+  "apres-shampoing":/apres[- ]?shamp|conditioner|demelant|masque|soin capillaire|apres[- ]?champ/, deo:/deo|deodor|transpir/,
+  dentifrice:/dentifr|toothpaste|pate dentaire/, solaire:/solaire|spf|\bsun|ecran|protect/, visage:/visage|face|serum|creme|soin|jour|nuit|hydrat|fluide|gel/,
+  corps:/corps|body|lait|creme|beurre|baume|lotion/, mains:/\bmains?\b|hand/, levres:/levre|lip|baume|stick/,
+  demaq:/demaq|micell|nettoy|make-?up|eau|lait|huile/, lessive:/lessive|laundry|detergent|lavage|linge/,
+  "lave-vaisselle":/lave[- ]?vaisselle|dishwasher|tablette|capsule|pastille|poudre/, vaisselle:/vaisselle|dish|plonge/,
+  nettoyant:/nettoy|clean|multi|surface|sol|vitre|degraiss|detartr/
+};
+const nrm = x => String(x||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+// Vendu en France : fiche marquée France et scannée en France (étiquette de popularité Open Facts « …-fr-scans-… »).
+const inFrance = p => (p.countries_tags||[]).includes("en:france") && (p.popularity_tags||[]).some(t=>/-fr-scans-/.test(t));
 // Note affichée en tête de la famille dans l'onglet Top 10.
 const NOTE = {douche:"Selon La Famille Tortue, presque tous les gels douche du commerce contiennent un ingrédient qu'elle évite (bétaïnes, sulfates, parfum) : d'où des notes plafonnées à 49. Elle conseille plutôt un savon saponifié à froid : voir la famille « Savons »."};
 
@@ -109,8 +122,8 @@ const FAM = [
   ["nettoyant","Ménager","Nettoyants ménagers","product",["en:all-purpose-cleaners","en:multi-purpose-cleaners","en:household-cleaners","en:cleaning-products","en:cleaners"]]
 ];
 const BASE = {food:"https://world.openfoodfacts.org", beauty:"https://world.openbeautyfacts.org", product:"https://world.openproductsfacts.org"};
-const FFIELDS = "code,product_name,product_name_fr,generic_name,generic_name_fr,brands,image_front_small_url,nutriscore_grade,nova_group,additives_tags,labels_tags,labels,categories_tags,categories,origins,quantity,ingredients_text,ingredients_text_fr,nutriments,product_type";
-const CFIELDS = "code,product_name,product_name_fr,generic_name,generic_name_fr,categories,brands,image_front_small_url,ingredients_text,ingredients_text_fr,ingredients_text_en,categories_tags,product_type";
+const FFIELDS = "code,product_name,product_name_fr,generic_name,generic_name_fr,brands,image_front_small_url,nutriscore_grade,nova_group,additives_tags,labels_tags,labels,categories_tags,categories,origins,quantity,ingredients_text,ingredients_text_fr,nutriments,product_type,countries_tags,popularity_tags,unique_scans_n";
+const CFIELDS = "countries_tags,popularity_tags,unique_scans_n,code,product_name,product_name_fr,generic_name,generic_name_fr,categories,brands,image_front_small_url,ingredients_text,ingredients_text_fr,ingredients_text_en,categories_tags,product_type";
 const UA = "MonScan/1.0 (https://github.com/Aurelien124/mon-scan)";
 const ORGANIC = ["en:organic","en:eu-organic","fr:ab-agriculture-biologique"];
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
@@ -163,14 +176,19 @@ async function search(base, tag, food, brand){
         // Garder les produits de la marque qui relèvent de cette famille (catégorie ou nom).
         const mine = (r||[]).filter(x=>(x.categories_tags||[]).includes(used) || (()=>{ x._src=base; const c = findCFam(x); return c && c.id===CMAP[id] && (id!=="savon" || /savon|soap/i.test(x.product_name_fr||x.product_name||"")); })());
         const known = new Set(prods.map(x=>x.code)); let add = 0;
-        for(const x of mine) if(!known.has(x.code)){ prods.push(x); add++; }
+        for(const x of mine) if(!known.has(x.code)){ x._followed = 1; prods.push(x); add++; }
         console.log("   + marque", br, r?r.length+" produits, "+add+" ajoutés ici":"échec");
       }
     }
     const seen = new Set(), items = [];
+    const nFr = prods.filter(inFrance).length;
+    const strict = nFr >= 15;   // assez de produits vendus en France pour filtrer sans vider la famille
+    let outFr = 0, outName = 0;
     for(const p of prods){
       const name = String(p.product_name_fr || p.product_name || "").replace(/\\(.)/g,"$1").trim();
       if(!p.code || !name || seen.has(p.code)) continue;
+      if(strict && !p._followed && !inFrance(p)){ outFr++; continue; }
+      if(NAMERE[id] && !NAMERE[id].test(nrm(name+" "+(p.generic_name_fr||"")))){ outName++; continue; }
       let s, it;
       let k = 0;
       if(food){
@@ -195,7 +213,7 @@ async function search(base, tag, food, brand){
     items.sort((x,y)=>y.s-x.s || (y.fk||0)-(x.fk||0) || x._k-y._k);
     items.forEach(it=>delete it._k);
     idx.fam[id] = {src:base, l:items.map(it=>[it.c, it.n, it.b, it.s])};
-    console.log(id.padEnd(16), used.padEnd(34), String(prods.length).padStart(3), "lus,", String(items.length).padStart(3), "notés, meilleur", items[0]?items[0].s:"-");
+    console.log(id.padEnd(16), used.padEnd(34), String(prods.length).padStart(3), "lus,", String(items.length).padStart(3), "notés, meilleur", items[0]?items[0].s:"-", "| vendus en France", nFr, strict?"(filtre appliqué, "+outFr+" écartés)":"(filtre non appliqué)", "| nom hors famille", outName);
     out.fam.push(Object.assign({id, g, t, src:base, tag:used, n:items.length, p:items.slice(0,15)}, NOTE[id]?{note:NOTE[id]}:{}));
   }
   // Index des marques suivies : tous leurs produits, même hors des familles du Top.

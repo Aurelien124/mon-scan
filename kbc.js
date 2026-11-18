@@ -109,7 +109,13 @@ const INGC = [
   {id:"filtres", nom:"Autres filtres UV chimiques", re:/methoxycinnamate|octinoxate|butyl methoxydibenzoylmethane|avobenzone|ethylhexyl triazone|diethylhexyl butamido triazone|phenylbenzimidazole sulfonic acid|dimethyl paba|^paba$/,
    off:[1,"Autorisés comme filtres UV. Plusieurs (dont l'ethylhexyl methoxycinnamate) sont évalués comme perturbateurs endocriniens potentiels.",[24]],
    lft:[2,"Filtres chimiques allergisants, certains perturbateurs endocriniens suspectés. Elle préfère l'oxyde de zinc non nano.",LFT+"2021/05/25/quelle-creme-solaire-choisir/"]},
-  {id:"nano", nom:"Nanoparticules", re:/\[nano\]|\(nano\)|\bnano\b/,
+  {id:"nano-zinc", nom:"Oxyde de zinc nano", re:/zinc oxide.*nano/,
+   off:[2,"Autorisé comme filtre, avec la mention [nano] obligatoire dans la liste des ingrédients.",[22]],
+   lft:[1,"Elle préfère les filtres minéraux sans nano, mais juge l'oxyde de zinc moins problématique que le dioxyde de titane et recommande une crème solaire à l'oxyde de zinc nano enrobé.",LFT+"2021/05/25/quelle-creme-solaire-choisir/"]},
+  {id:"nano-tio2", nom:"Dioxyde de titane nano", re:/(titanium dioxide|ci 77891).*nano/,
+   off:[2,"Autorisé comme filtre, avec la mention [nano] obligatoire dans la liste des ingrédients.",[22]],
+   lft:[2,"Elle l'évite, surtout sous forme nano.",LFT+"2022/04/08/nouvelle-reglementation-nanoparticules/"]},
+  {id:"nano", gen:1, nom:"Nanoparticules", re:/\[nano\]|\(nano\)|\bnano\b/,
    off:[2,"Autorisées pour certains filtres, avec la mention [nano] obligatoire dans la liste des ingrédients.",[22]],
    lft:[2,"Risques suspectés (stress oxydatif, voies respiratoires).",LFT+"2022/04/08/nouvelle-reglementation-nanoparticules/"]},
   {id:"tio2", gen:1, nom:"Dioxyde de titane", re:/titanium dioxide|ci 77891/, off:null,
@@ -132,7 +138,7 @@ const INGC = [
   {id:"benzylsal", nom:"Salicylate de benzyle", re:/benzyl salicylate|benzyl salycilate|hexyl salicylate/,
    off:[1,"Allergène de parfum à déclarer ; fait partie des substances évaluées comme perturbateurs endocriniens potentiels.",[5,24]],
    lft:[2,"Perturbateur endocrinien suspecté.",LFT_LISTE]},
-  {id:"parfum", nom:"Parfum de synthèse", re:/^(parfum|fragrance|aroma|perfume)$|(?<!sans )\bparfums?\b/, off:null,
+  {id:"parfum", nom:"Parfum de synthèse", re:/^(parfum|fragrance|perfume)$|(?<!sans )\bparfums?\b/, off:null,
    lft:[2,"Composition secrète, allergènes, phtalates possibles. Elle préfère les produits sans parfum.",LFT+"2020/06/16/les-parfums/"]},
   {id:"muscs", nom:"Muscs synthétiques", re:/galaxolide|hexamethylindanopyran|^hhcb$|tonalide|musk ketone|musk xylene|tetramethyl acetyloctahydronaphthalenes/, off:null,
    lft:[2,"S'accumulent dans les tissus et l'environnement, perturbateurs endocriniens suspectés.",LFT+"2025/06/12/analyse-compo-bajoah/"]},
@@ -333,6 +339,7 @@ const LFT_PRODUITS = [
 const LFT_PARTENAIRES = ["comme avant","savon arthur","senza","la fourche","gaelle besse","veraem","lao"];
 
 const JOURNAL_C = [
+  ["2026-11-18", "« Aroma » (arôme des dentifrices) n'est plus compté comme parfum : La Famille Tortue recommande des dentifrices qui en contiennent. Oxyde de zinc nano : « à limiter » et non plus « à éviter », comme dans son article sur les crèmes solaires."],
   ["2026-11-18", "Produits ménagers : les étiquettes en français réglementaire sont mieux lues (parfums, polycarboxylates, TAED, azurants optiques, phosphonates)."],
   ["2026-11-17", "Les produits dont la liste d'ingrédients est mal lue ou trop courte sont signalés dans l'historique, pour les corriger sur Open Beauty Facts."],
   ["2026-11-17", "Note cosmétique alignée sur la logique de La Famille Tortue (un ingrédient déconseillé suffit à sortir du « clean ») et alerte quand la liste d'ingrédients de la fiche est mal lue."],

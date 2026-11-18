@@ -687,7 +687,7 @@ async function renderTop(){
   if(!top || !top.fam || !top.fam.length){ box.innerHTML = '<p class="small muted">Classement pas encore disponible. Il est recalculé chaque lundi.</p>'; $("#topinfo").textContent=""; return; }
   const q = norm($("#topsearch").value);
   document.querySelectorAll("#topseg button").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.g===topGroup)));
-  const fams = top.fam.filter(f=> q ? norm(f.t).includes(q) : f.g===topGroup);
+  const fams = top.fam.filter(f=> f.p.length && (q ? norm(f.t).includes(q) : f.g===topGroup));
   box.innerHTML = fams.length ? fams.map(f=>`<details class="sec" data-f="${esc(f.id)}"><summary>${esc(f.t)}${q?` <span class="muted small">· ${esc(f.g)}</span>`:""}</summary><div class="topbody"></div></details>`).join("")
     : '<p class="small muted">Aucune famille ne correspond.</p>';
   $("#topinfo").textContent = "Classement calculé avec la note de l'appli et vos réglages, parmi les produits les plus scannés en France (fiches complètes seulement). Mis à jour le "+new Date(top.date).toLocaleDateString("fr-FR")+".";

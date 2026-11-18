@@ -22,7 +22,8 @@ function famBonus(p, adds){
   return familyCheck(p, fam, adds).hits.reduce((t,h)=>t+(h.t==="good"?1:h.t==="warn"?-1:h.t==="bad"?-2:0),0);
 }
 const W = [60,30,0,10];
-const CFAM = vm.runInContext("CFAM", ctx);
+const CFAM = vm.runInContext("CFAM", ctx), findCFam = vm.runInContext("findCFam", ctx);
+const BRAND_CACHE = {};
 const slug = x => String(x).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 // Famille du Top -> famille de produits de kbc.js : ses marques recommandées par La Famille Tortue sont ajoutées aux candidats,
 // même si elles ne sont pas parmi les plus scannées. PLUS : marques ajoutées à la demande de l'utilisateur.
@@ -107,13 +108,13 @@ const FAM = [
 ];
 const BASE = {food:"https://world.openfoodfacts.org", beauty:"https://world.openbeautyfacts.org", product:"https://world.openproductsfacts.org"};
 const FFIELDS = "code,product_name,product_name_fr,generic_name,generic_name_fr,brands,image_front_small_url,nutriscore_grade,nova_group,additives_tags,labels_tags,labels,categories_tags,categories,origins,quantity,ingredients_text,ingredients_text_fr,nutriments";
-const CFIELDS = "code,product_name,product_name_fr,brands,image_front_small_url,ingredients_text,ingredients_text_fr,ingredients_text_en,categories_tags,product_type";
+const CFIELDS = "code,product_name,product_name_fr,generic_name,generic_name_fr,categories,brands,image_front_small_url,ingredients_text,ingredients_text_fr,ingredients_text_en,categories_tags,product_type";
 const UA = "MonScan/1.0 (https://github.com/Aurelien124/mon-scan)";
 const ORGANIC = ["en:organic","en:eu-organic","fr:ab-agriculture-biologique"];
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
 
 async function search(base, tag, food, brand){
-  const url = BASE[base]+"/api/v2/search?categories_tags="+encodeURIComponent(tag)+(brand?"&brands_tags="+encodeURIComponent(brand)+"&page_size=30":"&countries_tags=en:france&page_size=100")+"&sort_by=unique_scans_n&fields="+(food?FFIELDS:CFIELDS);
+  const url = BASE[base]+"/api/v2/search?"+(brand?"brands_tags="+encodeURIComponent(brand)+"&page_size=100":"categories_tags="+encodeURIComponent(tag)+"&countries_tags=en:france&page_size=100")+"&sort_by=unique_scans_n&fields="+(food?FFIELDS:CFIELDS);
   for(let i=0;i<4;i++){
     try{
       const r = await fetch(url, {headers:{"User-Agent":UA}, signal:AbortSignal.timeout(60000)});
@@ -149,10 +150,14 @@ async function search(base, tag, food, brand){
       const cf = CFAM.find(c=>c.id===CMAP[id]);
       const brands = [...new Set([...(cf?cf.alts.map(a=>a[0]):[]), ...(PLUS[id]||[])].map(slug))];
       for(const br of brands){
-        const r = await search(base, used, false, br); await sleep(7000);
+        const key = base+"/"+br;
+        if(!(key in BRAND_CACHE)){ BRAND_CACHE[key] = await search(base, null, false, br); await sleep(7000); }
+        const r = BRAND_CACHE[key];
+        // Garder les produits de la marque qui relèvent de cette famille (catégorie ou nom).
+        const mine = (r||[]).filter(x=>(x.categories_tags||[]).includes(used) || (()=>{ x._src=base; const c = findCFam(x); return c && c.id===CMAP[id] && (id!=="savon" || /savon|soap/i.test(x.product_name_fr||x.product_name||"")); })());
         const known = new Set(prods.map(x=>x.code)); let add = 0;
-        for(const x of r||[]) if(!known.has(x.code)){ prods.push(x); add++; }
-        console.log("   + marque", br, r?r.length+" trouvés, "+add+" ajoutés":"échec");
+        for(const x of mine) if(!known.has(x.code)){ prods.push(x); add++; }
+        console.log("   + marque", br, r?r.length+" produits, "+add+" ajoutés ici":"échec");
       }
     }
     const seen = new Set(), items = [];

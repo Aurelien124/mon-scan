@@ -613,7 +613,7 @@ function renderCosmetic(p){
 
 /* ---------- Alternatives mieux notées (même catégorie) ---------- */
 /* ---------- Top 10 et alternatives ---------- */
-let TOP = null, topLoading = null, trail = [];
+let TOP = null, topLoading = null, trail = [], searchSeq = 0;
 function getTop(){
   if(TOP) return Promise.resolve(TOP);
   if(!topLoading) topLoading = fetch("top.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{ TOP=j; return j; }).catch(()=>{ topLoading=null; return null; });
@@ -700,10 +700,9 @@ function getIndex(){
   return fetch("search.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{ SIDX=j; return j; }).catch(()=>null);
 }
 const KIND = {food:"Aliment", beauty:"Cosmétique", product:"Ménager"};
-let searchSeq = 0;
 async function searchText(q){
   const seq = ++searchSeq;
-  trail = []; current = null;
+  trail = []; current = null; markResult();
   document.body.classList.add("has-result"); say("");
   const words = norm(q).split(/\s+/).filter(w=>w.length>1);
   const match = (n,b) => { const t = norm(n+" "+b); return words.every(w=>t.includes(w)); };
@@ -713,6 +712,7 @@ async function searchText(q){
     if(seq!==searchSeq) return;
     const list = [...found.values()].sort((a,b)=>(b.m-a.m) || ((b.s==null?-1:b.s)-(a.s==null?-1:a.s)));
     $("#result").innerHTML = `<div class="card res" id="srch">
+      <button class="backbar" type="button" data-home>‹ Accueil</button>
       <h2>Recherche « ${esc(q)} »</h2>
       ${list.length?`<ul class="alts">${list.slice(0,40).map(o=>`<li><button type="button" data-hit="${esc(o.c)}">${thumb(o.i)}<span><b>${esc(o.n)}</b><span class="srch-src">${KIND[o.src]||""}</span><br><span class="muted small">${esc(o.b||"")}</span></span>${pillS(o.s)}</button></li>`).join("")}</ul>`:""}
       <p class="small muted">${pending?"Recherche dans les bases Open Facts…":list.length?`${list.length} produit${list.length>1?"s":""} trouvé${list.length>1?"s":""}.`:"Aucun produit trouvé. Essayez un autre mot, ou la marque."}${!pending&&fails.length?` ${fails.join(", ")} : pas de réponse (serveur saturé), résultats partiels. <button class="btn ghost small" type="button" data-research="${esc(q)}">Relancer</button>`:""}</p>
@@ -761,7 +761,7 @@ const ICONS = {
   "Ménager":'<svg viewBox="0 0 32 32"><path d="M11 13h10l1 15H10z"/><path d="M14 13V8h4v5M18 9h5l2 2M23 6l1-2M25 8l2-1M25 11l2 1"/></svg>'
 };
 function renderHome(){
-  current = null; trail = [];
+  current = null; trail = []; searchSeq++;
   document.body.classList.remove("has-result");
   say("");
   const recent = history.slice(0,3);
@@ -783,7 +783,9 @@ function afterRender(){
   document.body.classList.add("has-result");
   const last = trail[trail.length-1];
   const card = $("#result .res");
-  if(last && card) card.insertAdjacentHTML("afterbegin", `<button class="backbar" type="button" data-back>‹ Retour ${last.view==="top"?"au Top 10":last.view==="search"?"aux résultats":"à « "+esc(last.name)+" »"}</button>`);
+  if(!card) return;
+  if(last) card.insertAdjacentHTML("afterbegin", `<button class="backbar" type="button" data-back>‹ Retour ${last.view==="top"?"au Top 10":last.view==="search"?"aux résultats":"à « "+esc(last.name)+" »"}</button>`);
+  else card.insertAdjacentHTML("afterbegin", `<button class="backbar" type="button" data-home>‹ Accueil</button>`);
 }
 async function openFrom(code, entry){
   trail.push(entry);
@@ -801,7 +803,8 @@ function goBack(){
   if(d && e.alts){ d.dataset.loaded="1"; d.open=true; $("#alts").innerHTML = e.alts; requestAnimationFrame(()=>d.scrollIntoView({block:"start"})); }
   else window.scrollTo(0,0);
 }
-window.addEventListener("popstate", ()=>{ if(trail.length) goBack(); });
+window.addEventListener("popstate", ()=>{ if(trail.length) goBack(); else if(document.body.classList.contains("has-result")){ show("scan"); renderHome(); } });
+function markResult(){ try{ if(!(window.history.state&&window.history.state.res)) window.history.pushState({res:1}, ""); }catch(e){} }
 
 /* ---------- Onglet Top 10 ---------- */
 let topGroup = "Alimentation";
@@ -852,7 +855,8 @@ async function fetchFrom(src, code){
 }
 async function lookup(raw, opt){
   opt = opt||{};
-  if(!opt.keep) trail = [];
+  searchSeq++;   // une recherche encore en cours ne doit plus réécrire l'écran
+  if(!opt.keep){ trail = []; markResult(); }
   const code = String(raw||"").replace(/\D/g,"");
   if(code.length<8){ say("Un code-barres compte 8 ou 13 chiffres. Vérifiez la saisie.",true); return; }
   $("#code").value = code;
@@ -1075,6 +1079,7 @@ $("#form-code").addEventListener("submit",e=>{
   if(/^[\d\s]{8,}$/.test(v)) lookup(v); else searchText(v);
 });
 $("#result").addEventListener("click",e=>{
+  if(e.target.closest("[data-home]")){ trail=[]; if(window.history.state&&window.history.state.res){ try{ window.history.back(); return; }catch(x){} } renderHome(); window.scrollTo(0,0); return; }
   if(e.target.closest("[data-back]")){ try{ window.history.back(); }catch(x){ goBack(); } return; }
   if(e.target.closest("[data-retry]")){ loadAlternatives(current); return; }
   const rs=e.target.closest("[data-research]"); if(rs){ searchText(rs.dataset.research); return; }

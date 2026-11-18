@@ -42,7 +42,9 @@ const SRC = [
   ["Que Choisir, l'octocrylène sur la sellette", "https://quechoisir.org/comparatif-ingredients-indesirables-n941/sence-sunscreen-milk-pi1484148"],                       // 23
   ["CosmeticOBS, ingrédients perturbateurs endocriniens en évaluation", "https://client.cosmeticobs.com/en/articles/news-59/endocrine-disrupting-ingredients-in-cosmetics-4414"], // 24
   ["EUR-Lex, règlement 2026/405 sur les détergents", "https://eur-lex.europa.eu/eli/reg/2026/405/oj/fra/pdf"],                                                              // 25
-  ["Que Choisir, allergènes non signalés dans les détergents", "https://www.quechoisir.org/actualite-detergents-menagers-des-allergenes-non-signales-aux-consommateurs-n132158/"] // 26
+  ["Que Choisir, allergènes non signalés dans les détergents", "https://www.quechoisir.org/actualite-detergents-menagers-des-allergenes-non-signales-aux-consommateurs-n132158/"], // 26
+  ["WECF France, guide des produits ménagers 2025", "https://wecf-france.org/wp-content/uploads/2025/12/PRODUITS-MENAGERS-GUIDE2025_V6.pdf"],                              // 27
+  ["écoconso, composition des lessives", "https://ecoconso.be/fr/node/2061/printable/pdf"]                                                                                  // 28
 ];
 
 /* ---------- Familles d'ingrédients ---------- */
@@ -130,7 +132,7 @@ const INGC = [
   {id:"benzylsal", nom:"Salicylate de benzyle", re:/benzyl salicylate|benzyl salycilate|hexyl salicylate/,
    off:[1,"Allergène de parfum à déclarer ; fait partie des substances évaluées comme perturbateurs endocriniens potentiels.",[5,24]],
    lft:[2,"Perturbateur endocrinien suspecté.",LFT_LISTE]},
-  {id:"parfum", nom:"Parfum de synthèse", re:/^(parfum|fragrance|aroma|perfume)$/, off:null,
+  {id:"parfum", nom:"Parfum de synthèse", re:/^(parfum|fragrance|aroma|perfume)$|(?<!sans )\bparfums?\b/, off:null,
    lft:[2,"Composition secrète, allergènes, phtalates possibles. Elle préfère les produits sans parfum.",LFT+"2020/06/16/les-parfums/"]},
   {id:"muscs", nom:"Muscs synthétiques", re:/galaxolide|hexamethylindanopyran|^hhcb$|tonalide|musk ketone|musk xylene|tetramethyl acetyloctahydronaphthalenes/, off:null,
    lft:[2,"S'accumulent dans les tissus et l'environnement, perturbateurs endocriniens suspectés.",LFT+"2025/06/12/analyse-compo-bajoah/"]},
@@ -176,6 +178,14 @@ const INGC = [
    lft:[1,"Déforestation ; comédogène.",LFT+"2024/03/05/les-huiles-vegetales/"]},
   {id:"enzymes", nom:"Enzymes (lessives, lave-vaisselle)", re:/subtilisin|protease|amylase|lipase|cellulase|mannanase|^enzymes?$/, off:null,
    lft:[1,"Allergisantes, souvent issues d'OGM. Acceptées si certifiées non OGM.",LFT+"2026/03/06/comparatif-produits-lave-vaisselle/"]},
+  {id:"polycarbox", nom:"Polycarboxylates", re:/polycarbox/, off:null,
+   lft:[2,"Polymères peu biodégradables : elle les écarte des lessives et des produits lave-vaisselle.",LFT+"2021/04/23/les-lessives-ecologiques/"]},
+  {id:"taed", nom:"TAED (activateur de blanchiment)", re:/\btaed\b|tetraacetylethylenediamine/, off:null,
+   lft:[1,"Relevé parmi les ingrédients qui écartent un produit lave-vaisselle du « clean ».",LFT+"2026/03/06/comparatif-produits-lave-vaisselle/"]},
+  {id:"azurants", nom:"Azurants optiques", re:/azurant|optical brightener|distyrylbiphenyl|diaminostilbene/, off:[1,"Pas de restriction. Peu biodégradables, ils se déposent sur la peau et le linge selon l'association WECF.",[27]],
+   lft:null},
+  {id:"phosphonates", nom:"Phosphonates", re:/phosphonate/, off:[1,"Pas de restriction propre. Jugés peu tolérés par l'environnement par les associations.",[28]],
+   lft:null},
   {id:"peroxyde", nom:"Eau oxygénée", re:/hydrogen peroxide/, off:null,
    lft:[2,"Oxydant agressif pour les cheveux et la peau.",LFT+"2024/09/25/routine-clean-cheveux-blancs-gris-ou-blonds/"]},
   /* Ingrédients appréciés */
@@ -323,6 +333,7 @@ const LFT_PRODUITS = [
 const LFT_PARTENAIRES = ["comme avant","savon arthur","senza","la fourche","gaelle besse","veraem","lao"];
 
 const JOURNAL_C = [
+  ["2026-11-18", "Produits ménagers : les étiquettes en français réglementaire sont mieux lues (parfums, polycarboxylates, TAED, azurants optiques, phosphonates)."],
   ["2026-11-17", "Les produits dont la liste d'ingrédients est mal lue ou trop courte sont signalés dans l'historique, pour les corriger sur Open Beauty Facts."],
   ["2026-11-17", "Note cosmétique alignée sur la logique de La Famille Tortue (un ingrédient déconseillé suffit à sortir du « clean ») et alerte quand la liste d'ingrédients de la fiche est mal lue."],
   ["2026-11-17", "Création de la partie cosmétiques et ménager : " + INGC.length + " familles d'ingrédients (statut officiel vérifié et avis de La Famille Tortue), 15 familles de produits avec alternatives, analyses de marques et de produits de La Famille Tortue."]

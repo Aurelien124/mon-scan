@@ -124,7 +124,7 @@ body.has-result .hide-res{display:none!important}
 .gh{font-family:var(--display);font-weight:800;font-size:17px;margin:8px 0 0}
 .vtag{display:inline-block;font-size:11.5px;font-weight:700;border-radius:6px;padding:2px 6px;border:1px solid var(--line);color:var(--muted);margin-top:4px}
 .vtag.ok{color:var(--good);border-color:color-mix(in srgb,var(--good) 45%,var(--surface))}
-#gsearch{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:11px 12px}
+#gsearch,#topsearch{width:100%;box-sizing:border-box;font:inherit;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:11px 12px}
 .lv0{background:var(--good)} .lv1{background:var(--ok)} .lv2{background:var(--warn)} .lv3{background:var(--bad)}
 .alert{border-left:4px solid var(--warn);background:var(--tint);padding:8px 12px;border-radius:0 8px 8px 0;font-size:14.5px}
 .alert.red{border-left-color:var(--bad)}
@@ -168,6 +168,13 @@ label.check input{width:20px;height:20px;accent-color:var(--accent)}
 .ingr-hit .muted{font-size:13px}
 .alts{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
 .alts li{font-size:14.5px}
+.backbar{all:unset;cursor:pointer;display:flex;align-items:center;gap:6px;font-weight:700;font-size:15px;color:var(--accent);padding:4px 2px 10px;margin-bottom:2px;border-bottom:1px solid var(--line);-webkit-tap-highlight-color:transparent}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;background:var(--bg);padding:4px;border-radius:12px}
+.seg button{all:unset;cursor:pointer;text-align:center;padding:10px 4px;border-radius:9px;font-weight:700;font-size:14px;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.toplist{counter-reset:r}
+.toplist button{grid-template-columns:22px 40px 1fr !important}
+.toplist .rk{font-weight:800;color:var(--muted);font-size:13px;text-align:right}
 .alts button{all:unset;cursor:pointer;display:grid;grid-template-columns:40px 1fr;gap:10px;align-items:center;width:100%}
 .ptag{display:inline-block;font-size:11px;font-weight:700;border-radius:6px;padding:1px 5px;margin-left:4px;border:1px solid var(--line);color:var(--muted)}
 .lftbox{border:1px solid color-mix(in srgb,#7a4fb5 40%,var(--surface));background:color-mix(in srgb,#7a4fb5 8%,var(--surface));border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
@@ -176,8 +183,8 @@ label.check input{width:20px;height:20px;accent-color:var(--accent)}
 
 /* Onglets */
 nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:8px max(10px,env(safe-area-inset-left)) calc(16px + env(safe-area-inset-bottom));z-index:5;box-shadow:0 -4px 14px rgba(0,0,0,.06)}
-nav.tabs div{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
-.tab{all:unset;cursor:pointer;text-align:center;padding:14px 4px;min-height:24px;border-radius:12px;font-size:14.5px;font-weight:700;color:var(--muted);-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+nav.tabs div{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
+.tab{all:unset;cursor:pointer;text-align:center;padding:14px 2px;min-height:24px;border-radius:12px;font-size:13.5px;letter-spacing:-.1px;font-weight:700;color:var(--muted);-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .tab[aria-selected=true]{background:var(--tint);color:var(--ink)}
 section[hidden]{display:none!important}
 section.view{display:flex;flex-direction:column;gap:16px}
@@ -228,6 +235,21 @@ section.view{display:flex;flex-direction:column;gap:16px}
     <div class="card">
       <div class="row" style="justify-content:space-between"><h2>Derniers scans</h2><button class="btn ghost small" id="btn-clear" type="button">Effacer</button></div>
       <div id="hist" class="hist"></div>
+    </div>
+  </section>
+
+  <!-- TOP 10 -->
+  <section class="view" id="v-top" hidden>
+    <div class="card">
+      <h2>Top 10 par famille</h2>
+      <div class="seg" id="topseg">
+        <button type="button" data-g="Alimentation" aria-pressed="true">Alimentation</button>
+        <button type="button" data-g="Cosmétiques" aria-pressed="false">Cosmétiques</button>
+        <button type="button" data-g="Ménager" aria-pressed="false">Ménager</button>
+      </div>
+      <input id="topsearch" type="search" placeholder="Chercher une famille (ex. ketchup)" autocomplete="off">
+      <div id="toplist"><p class="small muted">Chargement…</p></div>
+      <p class="muted small" id="topinfo"></p>
     </div>
   </section>
 
@@ -283,6 +305,7 @@ section.view{display:flex;flex-direction:column;gap:16px}
   <button class="tab" role="tab" data-view="scan" aria-selected="true">Scanner</button>
   <button class="tab" role="tab" data-view="guides" aria-selected="false">Guides</button>
   <button class="tab" role="tab" data-view="hist" aria-selected="false">Historique</button>
+  <button class="tab" role="tab" data-view="top" aria-selected="false">Top 10</button>
   <button class="tab" role="tab" data-view="set" aria-selected="false">Réglages</button>
 </div></nav>
 
@@ -500,7 +523,7 @@ function renderProduct(p, isSample){
     <details class="sec"><summary>Ingrédients</summary><p class="ingr">${esc(p.ingredients_text_fr||p.ingredients_text||"Liste absente de la fiche.")}</p>
     ${p.code?`<a class="small" href="https://fr.openfoodfacts.org/produit/${encodeURIComponent(p.code)}" target="_blank" rel="noopener">Voir ou corriger la fiche sur Open Food Facts</a>`:""}</details>
   </div>`;
-  document.body.classList.add("has-result");
+  afterRender();
   return a;
 }
 
@@ -555,32 +578,133 @@ function renderCosmetic(p){
       ${p.code?`<a class="small" href="${src[1]}/${src[3]}/${encodeURIComponent(p.code)}" target="_blank" rel="noopener">Voir ou corriger la fiche sur ${esc(src[2])}</a>`:""}</details>
     <p class="muted small">Note indicative de l'appli${settings.lftScore&&settings.lft?", qui suit la logique de La Famille Tortue":""}. Détail du calcul dans les Réglages.</p>
   </div>`;
-  document.body.classList.add("has-result");
+  afterRender();
   return a;
 }
 
 /* ---------- Alternatives mieux notées (même catégorie) ---------- */
+/* ---------- Top 10 et alternatives ---------- */
+let TOP = null, topLoading = null, trail = [];
+function getTop(){
+  if(TOP) return Promise.resolve(TOP);
+  if(!topLoading) topLoading = fetch("top.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(j=>{ TOP=j; return j; }).catch(()=>{ topLoading=null; return null; });
+  return topLoading;
+}
+function topScore(it, src){
+  if(src==="food"){ const a = analyse({nutriscore_grade:it.g, nova_group:it.nv||undefined, additives_tags:(it.ad||[]).map(a=>"en:"+a), labels_tags:it.bio?["en:organic"]:[]}, settings.w); return {s:a.score, k:a.adds.length}; }
+  const a = analyseCosmetic({code:it.c, product_name:it.n, brands:it.b, ingredients_text:it.inci, _src:src}, {lft:settings.lft, lftScore:settings.lftScore});
+  return {s:a.score, k:a.offHits.length+a.lftHits.length};
+}
+// À note égale, le produit avec le moins de points signalés passe devant.
+function topItems(f){ return f.p.map(it=>Object.assign({it}, topScore(it,f.src))).filter(o=>o.s!=null).sort((a,b)=>b.s-a.s || a.k-b.k); }
+function prodBtn(code, name, brand, sc, img, rank){
+  const im = safeImg(img);
+  return `<li><button type="button" data-alt="${esc(code)}">${rank?`<span class="rk">${rank}</span>`:""}<span class="pill" style="background:${verdict(sc)[1]};width:40px;height:40px">${sc}</span><span><b>${esc(name)}</b><br><span class="muted small">${esc(brand||"")}</span></span></button></li>`;
+}
+function altFamily(p, top){
+  if(!top) return null;
+  const tags = p.categories_tags||[];
+  let best = null, bi = -1;
+  for(const f of top.fam){ const i = tags.indexOf(f.tag); if(i>bi && f.src===(p._src||"food")){ bi=i; best=f; } }
+  return best;
+}
+async function fetchT(url, ms){
+  const c = new AbortController(); const t = setTimeout(()=>c.abort(), ms);
+  try{ return await fetch(url,{signal:c.signal}); } finally { clearTimeout(t); }
+}
 async function loadAlternatives(p){
   const box = $("#alts"); if(!box) return;
-  const cats = (p.categories_tags||[]).filter(t=>/^en:/.test(t));
-  const cat = cats[cats.length-1];
-  if(!cat){ box.innerHTML = '<p class="small muted">Catégorie inconnue : comparaison impossible.</p>'; return; }
   const food = !p._src || p._src==="food";
   const src = srcOf(p._src||"food");
   const scoreOf = x => food ? analyse(x, settings.w).score : analyseCosmetic(x,{lft:settings.lft, lftScore:settings.lftScore}).score;
   const base = scoreOf(p);
-  box.innerHTML = '<p class="small muted">Recherche dans la catégorie « '+esc(cat.slice(3).replace(/-/g," "))+' »…</p>';
-  try{
-    const r = await fetch(src[1]+"/api/v2/search?categories_tags="+encodeURIComponent(cat)+"&countries_tags=en:france&page_size=60&sort_by=popularity_key&fields="+(food?FIELDS:CFIELDS));
-    if(!r.ok) throw new Error("HTTP "+r.status);
-    const j = await r.json();
-    const list = (j.products||[]).filter(x=>x.code && x.code!==p.code && (x.product_name_fr||x.product_name))
-      .map(x=>{ x._src = p._src||"food"; return {x, s:scoreOf(x)}; })
+  const show = (list, note)=>{
+    if(!$("#alts") || current!==p) return;
+    $("#alts").innerHTML = list.length ? `<ul class="alts">${list.join("")}</ul><p class="muted small">${note}</p>`
+      : `<p class="small muted">Aucun produit mieux noté trouvé. ${note}</p>`;
+  };
+  box.innerHTML = '<p class="small muted">Recherche…</p>';
+  // 1. Top de la semaine, calculé à l'avance : instantané.
+  const top = await getTop();
+  const f = altFamily(p, top);
+  if(f){
+    const list = topItems(f).filter(o=>o.it.c!==p.code && (base==null || o.s>base)).slice(0,6);
+    if(list.length){ show(list.map(o=>prodBtn(o.it.c,o.it.n,o.it.b,o.s,o.it.i)), `Parmi les produits les plus scannés de la famille « ${esc(f.t)} » (mise à jour du ${new Date(top.date).toLocaleDateString("fr-FR")}).`); return; }
+  }
+  // 2. Recherche en direct, gardée en mémoire 7 jours.
+  const cats = (p.categories_tags||[]).filter(t=>/^en:/.test(t));
+  if(!cats.length){ show([], "Catégorie inconnue sur la fiche."); return; }
+  const tryCats = [cats[cats.length-1]]; if(cats.length>1) tryCats.push(cats[cats.length-2]);
+  const fields = food ? "code,product_name,product_name_fr,brands,image_front_small_url,nutriscore_grade,nova_group,additives_tags,labels_tags" : CFIELDS;
+  for(const cat of tryCats){
+    const key = "ms-alt-"+(p._src||"food")+"-"+cat;
+    let prods = null; const cached = store.get(key,null);
+    if(cached && Date.now()-cached.t < 7*864e5) prods = cached.p;
+    else{
+      if($("#alts")) $("#alts").innerHTML = '<p class="small muted">Recherche dans « '+esc(cat.slice(3).replace(/-/g," "))+' »…</p>';
+      try{
+        const r = await fetchT(src[1]+"/api/v2/search?categories_tags="+encodeURIComponent(cat)+"&countries_tags=en:france&page_size=40&sort_by=unique_scans_n&fields="+fields, 12000);
+        if(r.ok){ const j = await r.json(); prods = (j.products||[]).filter(x=>x.code && (x.product_name_fr||x.product_name)); store.set(key,{t:Date.now(), p:prods}); }
+      }catch(e){}
+    }
+    if(!prods) continue;
+    const list = prods.filter(x=>x.code!==p.code).map(x=>{ x._src = p._src||"food"; return {x, s:scoreOf(x)}; })
       .filter(o=>o.s!=null && (base==null || o.s>base)).sort((a,b)=>b.s-a.s).slice(0,6);
-    box.innerHTML = list.length ? `<div><ul class="alts">${list.map(o=>`<li><button type="button" data-code="${esc(o.x.code)}"><span class="pill" style="background:${verdict(o.s)[1]};width:40px;height:40px">${o.s}</span><span><b>${esc(o.x.product_name_fr||o.x.product_name)}</b><br><span class="muted small">${esc(o.x.brands||"")}</span></span></button></li>`).join("")}</ul><p class="muted small">Calculé avec la note de l'appli sur les produits les plus scannés de la catégorie${food?"":" (fiches avec liste d'ingrédients)"}.</p></div>`
-      : '<p class="small muted">Aucun produit mieux noté trouvé dans cette catégorie.</p>';
-  }catch(e){ box.innerHTML = '<p class="small muted">La recherche d\'alternatives n\'a pas abouti. Réessayez plus tard.</p>'; }
+    if(list.length || cat===tryCats[tryCats.length-1]){ show(list.map(o=>prodBtn(o.x.code,o.x.product_name_fr||o.x.product_name,o.x.brands,o.s,o.x.image_front_small_url)), "Parmi les produits les plus scannés de la catégorie « "+esc(cat.slice(3).replace(/-/g," "))+" »."); return; }
+  }
+  if($("#alts") && current===p) $("#alts").innerHTML = '<p class="small muted">La base ne répond pas pour le moment. <button class="btn ghost small" type="button" data-retry>Réessayer</button></p>';
 }
+
+/* ---------- Navigation avec retour ---------- */
+function afterRender(){
+  document.body.classList.add("has-result");
+  const last = trail[trail.length-1];
+  const card = $("#result .res");
+  if(last && card) card.insertAdjacentHTML("afterbegin", `<button class="backbar" type="button" data-back>‹ Retour ${last.view==="top"?"au Top 10":"à « "+esc(last.name)+" »"}</button>`);
+}
+async function openFrom(code, entry){
+  trail.push(entry);
+  try{ window.history.pushState({ms:trail.length}, ""); }catch(e){}
+  show("scan");
+  await lookup(code, {keep:true, noHist:true});
+}
+function goBack(){
+  const e = trail.pop(); if(!e) return;
+  if(e.view==="top"){ show("top"); renderTop().then(()=>{ if(e.open){ const d=document.querySelector('#toplist details[data-f="'+e.open+'"]'); if(d) d.open=true; } requestAnimationFrame(()=>window.scrollTo(0,e.y||0)); }); return; }
+  current = e.p; say("");
+  renderProduct(current, current===SAMPLE);
+  const d = $("#result details[data-alts]");
+  if(d && e.alts){ d.dataset.loaded="1"; d.open=true; $("#alts").innerHTML = e.alts; requestAnimationFrame(()=>d.scrollIntoView({block:"start"})); }
+  else window.scrollTo(0,0);
+}
+window.addEventListener("popstate", ()=>{ if(trail.length) goBack(); });
+
+/* ---------- Onglet Top 10 ---------- */
+let topGroup = "Alimentation";
+async function renderTop(){
+  const box = $("#toplist");
+  const top = await getTop();
+  if(!top || !top.fam || !top.fam.length){ box.innerHTML = '<p class="small muted">Classement pas encore disponible. Il est recalculé chaque lundi.</p>'; $("#topinfo").textContent=""; return; }
+  const q = norm($("#topsearch").value);
+  document.querySelectorAll("#topseg button").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.g===topGroup)));
+  const fams = top.fam.filter(f=> q ? norm(f.t).includes(q) : f.g===topGroup);
+  box.innerHTML = fams.length ? fams.map(f=>`<details class="sec" data-f="${esc(f.id)}"><summary>${esc(f.t)}${q?` <span class="muted small">· ${esc(f.g)}</span>`:""}</summary><div class="topbody"></div></details>`).join("")
+    : '<p class="small muted">Aucune famille ne correspond.</p>';
+  $("#topinfo").textContent = "Classement calculé avec la note de l'appli et vos réglages, parmi les produits les plus scannés en France (fiches complètes seulement). Mis à jour le "+new Date(top.date).toLocaleDateString("fr-FR")+".";
+}
+$("#toplist").addEventListener("toggle", e=>{
+  const d = e.target; if(!d.matches || !d.matches("details[data-f]") || !d.open) return;
+  const f = TOP && TOP.fam.find(x=>x.id===d.dataset.f); if(!f) return;
+  const list = topItems(f).slice(0,10);
+  d.querySelector(".topbody").innerHTML = list.length ? `<ul class="alts toplist">${list.map((o,i)=>prodBtn(o.it.c,o.it.n,o.it.b,o.s,o.it.i,i+1)).join("")}</ul>` : '<p class="small muted">Pas assez de fiches complètes.</p>';
+}, true);
+$("#toplist").addEventListener("click", e=>{
+  const b = e.target.closest("[data-alt]"); if(!b) return;
+  const d = b.closest("details");
+  openFrom(b.dataset.alt, {view:"top", y:window.scrollY, open:d&&d.dataset.f});
+});
+$("#topseg").addEventListener("click", e=>{ const b=e.target.closest("[data-g]"); if(!b) return; topGroup=b.dataset.g; $("#topsearch").value=""; renderTop(); });
+$("#topsearch").addEventListener("input", ()=>renderTop());
 
 /* ---------- Recherche ---------- */
 const FIELDS = "code,product_name,product_name_fr,brands,quantity,image_front_small_url,nutriscore_grade,nova_group,additives_tags,labels_tags,ingredients_text,ingredients_text_fr,ingredients_analysis_tags,nutriments,ecoscore_grade,environmental_score_grade,categories_tags,categories,labels,generic_name,generic_name_fr,origins";
@@ -602,7 +726,9 @@ async function fetchFrom(src, code){
   p._src = p.product_type==="beauty" ? "beauty" : p.product_type==="product" ? "product" : src[0];
   return p;
 }
-async function lookup(raw){
+async function lookup(raw, opt){
+  opt = opt||{};
+  if(!opt.keep) trail = [];
   const code = String(raw||"").replace(/\D/g,"");
   if(code.length<8){ say("Un code-barres compte 8 ou 13 chiffres. Vérifiez la saisie.",true); return; }
   $("#code").value = code;
@@ -617,6 +743,7 @@ async function lookup(raw){
   current = hit.value;
   const a = renderProduct(current,false);
   say("");
+  if(opt.noHist){ window.scrollTo(0,0); return; }
   history = [{code, name: current.product_name_fr||current.product_name||"Produit sans nom", brand: current.brands||"", score:a.score, type:current._src, warn:!!(a.doubtful || (current._src!=="food" && !a.toks.length)), ts:Date.now()}]
     .concat(history.filter(h=>h.code!==code)).slice(0,50);
   store.set("ms-history",history); renderHistory();
@@ -795,9 +922,10 @@ function renderSettings(){
 }
 function saveSettings(){ store.set("ms-settings",settings); renderSettings(); if(current) renderProduct(current, current===SAMPLE); }
 function show(view){
-  ["scan","guides","hist","set"].forEach(v=>{ $("#v-"+v).hidden = v!==view; });
+  ["scan","guides","hist","top","set"].forEach(v=>{ $("#v-"+v).hidden = v!==view; });
   document.querySelectorAll(".tab").forEach(t=>t.setAttribute("aria-selected", String(t.dataset.view===view)));
   if(view!=="scan") stopScan();
+  if(view==="top") renderTop();
   window.scrollTo(0,0);
 }
 
@@ -817,6 +945,9 @@ $("#file").addEventListener("change",e=>{scanPhoto(e.target.files[0]); e.target.
 $("#form-code").addEventListener("submit",e=>{e.preventDefault(); lookup($("#code").value);});
 document.querySelectorAll(".chipbtn").forEach(b=>b.addEventListener("click",()=>lookup(b.dataset.code)));
 $("#result").addEventListener("click",e=>{
+  if(e.target.closest("[data-back]")){ try{ window.history.back(); }catch(x){ goBack(); } return; }
+  if(e.target.closest("[data-retry]")){ loadAlternatives(current); return; }
+  const al=e.target.closest("[data-alt]"); if(al && current){ const ab=$("#alts"); openFrom(al.dataset.alt, {p:current, name:current.product_name_fr||current.product_name||"produit", alts:ab?ab.innerHTML:""}); return; }
   const c=e.target.closest("[data-code]"); if(c){ lookup(c.dataset.code); return; }
   const b=e.target.closest("[data-guide]"); if(!b) return;
   show("guides"); $("#gsearch").value=""; renderGuides(); const d=document.querySelector("#g-"+b.dataset.guide+" details"); if(d){d.open=true; d.scrollIntoView({block:"start"});}

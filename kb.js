@@ -225,12 +225,12 @@ const KB = [
  lead:"« Vierge extra » est la catégorie supérieure : extraction mécanique, sans raffinage. L'huile d'olive apporte peu d'oméga-6 et pas d'oméga-3 : elle est neutre sur cet équilibre et supporte une cuisson modérée.",
  rank:[["Vierge extra avec origine précise (pays, région, AOP), récolte datée","Bouteille opaque ou bidon métal."],["Vierge extra « origine UE »","Mélange de plusieurs pays."],["Huile d'olive vierge","Qualité gustative inférieure."]],
  last:["« Huile d'olive composée d'huiles raffinées et d'huiles vierges », huile de grignons","Huiles raffinées."],
- pieges:["« Mise en bouteille en Italie » ne dit pas où les olives ont poussé.","La lumière oxyde l'huile : éviter les bouteilles transparentes exposées.","« Première pression à froid » est un argument surtout commercial : toutes les vierges extra sont extraites à froid."],
+ pieges:["« Mise en bouteille en Italie » ne dit pas où les olives ont poussé.","La lumière oxyde l'huile : éviter les bouteilles transparentes exposées.","« Première pression à froid » est un argument surtout commercial : toutes les vierges extra sont extraites à froid.","Tests 2025 : Que Choisir a jugé que la plupart des huiles vendues « vierge extra » n'avaient pas ce niveau, bio compris ; 60 Millions a trouvé au moins un contaminant (plastifiants, hydrocarbures) dans les 22 huiles testées. Le bio ne garantit ni la catégorie ni l'absence de contaminants.","La note de l'appli ne départage pas les huiles d'olive (même Nutri-Score, pas d'additifs) : pour choisir, se fier aux tests récents d'associations."],
  gestes:["Compléter avec de l'huile de colza pour les oméga-3."],
  sig:[{t:"good",re:/vierge extra|extra vierge/,m:"Vierge extra."},{t:"bad",re:/raffinee|composee d'huiles|grignons/,m:"Contient de l'huile raffinée ou de grignons."},{t:"good",re:/\baop\b|\baoc\b|\bigp\b|\bdop\b/,m:"Appellation d'origine."},
       {t:"warn",re:/originaires? de l'union europeenne et non|ue et non ue|non originaires?|hors ue|melange d'huiles d'olive/,m:"Mélange d'origines UE et hors UE."},{t:"good",re:BIO,m:"Bio."}],
  miss:[{un:/vierge extra|extra vierge|raffinee|composee|grignons|\bvierge\b/,m:"Catégorie non précisée sur la fiche : chercher « vierge extra »."}],
- sources:[["LaNutrition.fr, choisir ses huiles","https://www.lanutrition.fr/node/20082"],["e-santé, bonnes et mauvaises huiles","https://www.e-sante.fr/omega-3-omega-6-quelles-sont-les-bonnes-et-mauvaises-huiles-pour-la-sante/actualite/615269"]]},
+ sources:[["LaNutrition.fr, choisir ses huiles","https://www.lanutrition.fr/node/20082"],["e-santé, bonnes et mauvaises huiles","https://www.e-sante.fr/omega-3-omega-6-quelles-sont-les-bonnes-et-mauvaises-huiles-pour-la-sante/actualite/615269"],["Que Choisir, comparatif des huiles d'olive vierges extra","https://www.quechoisir.org/comparatif-huiles-d-olives-vierges-extra-n467/"],["greenMe, résultats du test Que Choisir 2025","https://www.greenme.it/?p=1243029"],["Futura, test 60 Millions de consommateurs 2025","https://www.futura-sciences.com/sante/actualites/alimentation-ce-vous-avalez-votre-huile-olive-va-vous-surprendre-revele-60-millions-consommateurs-121606/"]]},
 
 {id:"huiles", g:"Matières grasses", title:"Huiles de colza, tournesol et autres", sub:"L'équilibre oméga-6 / oméga-3", verif:1,
  cats:["en:rapeseed-oils","en:sunflower-oils","en:vegetable-oils","en:walnut-oils","en:flaxseed-oils","en:grape-seed-oils","en:peanut-oils","en:mixed-vegetable-oils","en:coconut-oils","en:sesame-oils"],
@@ -377,6 +377,7 @@ const KB = [
 /* ================= JOURNAL DES MISES À JOUR =================
    Ajouter une ligne EN TÊTE à chaque mise à jour : ["AAAA-MM-JJ", "ce qui a changé, en une phrase"]. */
 const JOURNAL = [
+  ["2026-11-18", "Huile d'olive : ajout des résultats des tests Que Choisir et 60 Millions de 2025 (catégorie « vierge extra » souvent non tenue, contaminants fréquents, bio compris)."],
   ["2026-11-17", "Passage LaNutrition.fr : pain, céréales, yaourts, margarines et jus vérifiés et complétés (16 fiches vérifiées sur 28) ; source erronée de la fiche jus corrigée."],
   ["2026-11-16", "Création de la base : 28 familles, dont 11 vérifiées sur sources."]
 ];

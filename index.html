@@ -596,7 +596,12 @@ function topScore(it, src){
   return {s:a.score, k:a.offHits.length+a.lftHits.length};
 }
 // À note égale, le produit avec le moins de points signalés passe devant.
-function topItems(f){ return f.p.map(it=>Object.assign({it}, topScore(it,f.src))).filter(o=>o.s!=null).sort((a,b)=>b.s-a.s || a.k-b.k); }
+// Puis les critères de la fiche famille (fk), puis le moins de points signalés.
+function topItems(f){
+  const l = f.p.map(it=>Object.assign({it}, topScore(it,f.src))).filter(o=>o.s!=null).sort((a,b)=>b.s-a.s || (b.it.fk||0)-(a.it.fk||0) || a.k-b.k);
+  l.forEach((o,i)=>{ o.rank = i && o.s===l[i-1].s && (o.it.fk||0)===(l[i-1].it.fk||0) ? l[i-1].rank : i+1; });
+  return l;
+}
 function prodBtn(code, name, brand, sc, img, rank){
   const im = safeImg(img);
   return `<li><button type="button" data-alt="${esc(code)}">${rank?`<span class="rk">${rank}</span>`:""}<span class="pill" style="background:${verdict(sc)[1]};width:40px;height:40px">${sc}</span><span><b>${esc(name)}</b><br><span class="muted small">${esc(brand||"")}</span></span></button></li>`;
@@ -690,13 +695,13 @@ async function renderTop(){
   const fams = top.fam.filter(f=> f.p.length && (q ? norm(f.t).includes(q) : f.g===topGroup));
   box.innerHTML = fams.length ? fams.map(f=>`<details class="sec" data-f="${esc(f.id)}"><summary>${esc(f.t)}${q?` <span class="muted small">· ${esc(f.g)}</span>`:""}</summary><div class="topbody"></div></details>`).join("")
     : '<p class="small muted">Aucune famille ne correspond.</p>';
-  $("#topinfo").textContent = "Classement calculé avec la note de l'appli et vos réglages, parmi les produits les plus scannés en France (fiches complètes seulement). Mis à jour le "+new Date(top.date).toLocaleDateString("fr-FR")+".";
+  $("#topinfo").textContent = "Classement calculé avec la note de l'appli et vos réglages, parmi les produits les plus scannés en France (fiches complètes seulement). À note égale, les critères de la fiche famille départagent ; « = » signale un ex æquo. La note ne mesure ni le goût ni les contaminants révélés par les tests d'associations. Mis à jour le "+new Date(top.date).toLocaleDateString("fr-FR")+".";
 }
 $("#toplist").addEventListener("toggle", e=>{
   const d = e.target; if(!d.matches || !d.matches("details[data-f]") || !d.open) return;
   const f = TOP && TOP.fam.find(x=>x.id===d.dataset.f); if(!f) return;
   const list = topItems(f).slice(0,10);
-  d.querySelector(".topbody").innerHTML = list.length ? `<ul class="alts toplist">${list.map((o,i)=>prodBtn(o.it.c,o.it.n,o.it.b,o.s,o.it.i,i+1)).join("")}</ul>` : '<p class="small muted">Pas assez de fiches complètes.</p>';
+  d.querySelector(".topbody").innerHTML = list.length ? `${list.length>1&&list.every(o=>o.rank===1)?'<p class="small muted">Tous ex æquo : la note ne départage pas ces produits (voir la fiche de la famille dans Guides).</p>':""}<ul class="alts toplist">${list.map(o=>prodBtn(o.it.c,o.it.n,o.it.b,o.s,o.it.i,(list.filter(x=>x.rank===o.rank).length>1?"=":"")+o.rank)).join("")}</ul>` : '<p class="small muted">Pas assez de fiches complètes.</p>';
 }, true);
 $("#toplist").addEventListener("click", e=>{
   const b = e.target.closest("[data-alt]"); if(!b) return;

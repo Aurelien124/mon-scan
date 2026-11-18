@@ -15,6 +15,12 @@ if(a<0 || b<0) throw new Error("Moteur introuvable dans index.html");
 vm.runInContext(html.slice(a,b), ctx, {filename:"index.html"});
 const analyse = vm.runInContext("analyse", ctx);
 const analyseCosmetic = vm.runInContext("analyseCosmetic", ctx);
+const findFamily = vm.runInContext("findFamily", ctx), familyCheck = vm.runInContext("familyCheck", ctx);
+// Bonus de départage tiré des règles de la fiche famille (kb.js) : bon +1, à surveiller -1, à limiter -2.
+function famBonus(p, adds){
+  const fam = findFamily(p); if(!fam) return 0;
+  return familyCheck(p, fam, adds).hits.reduce((t,h)=>t+(h.t==="good"?1:h.t==="warn"?-1:h.t==="bad"?-2:0),0);
+}
 const W = [60,30,0,10];
 
 /* ---------- Familles ---------- */
@@ -29,11 +35,14 @@ const FAM = [
   ["muesli","Alimentation","Mueslis et flocons","food",["en:mueslis","en:rolled-oats"]],
   ["biscottes","Alimentation","Biscottes","food",["en:rusks"]],
   ["brioches","Alimentation","Brioches","food",["en:brioches"]],
+  ["pain-epices","Alimentation","Pain d'épices","food",["en:gingerbreads","fr:pains-d-epices","en:gingerbread"]],
   ["pain-de-mie","Alimentation","Pain de mie","food",["en:sandwich-breads","fr:pains-de-mie"]],
   ["madeleines","Alimentation","Madeleines et gâteaux moelleux","food",["en:madeleines","en:sponge-cakes"]],
   ["confitures","Alimentation","Confitures","food",["en:jams","en:fruit-preserves"]],
   ["compotes","Alimentation","Compotes","food",["en:compotes"]],
   ["jus-orange","Alimentation","Jus d'orange","food",["en:orange-juices"]],
+  ["jus-fruits","Alimentation","Jus de fruits (tous)","food",["en:fruit-juices","en:juices-and-nectars"]],
+  ["jus-pomme","Alimentation","Jus de pomme","food",["en:apple-juices"]],
   ["yaourts-nature","Alimentation","Yaourts nature","food",["en:plain-yogurts"]],
   ["yaourts-fruits","Alimentation","Yaourts aux fruits","food",["en:fruit-yogurts"]],
   ["fromage-blanc","Alimentation","Fromages blancs","food",["en:fromages-blancs-natures","en:quarks","fr:fromages-blancs","en:fresh-cheeses"]],
@@ -88,7 +97,7 @@ const FAM = [
   ["nettoyant","Ménager","Nettoyants ménagers","product",["en:all-purpose-cleaners","en:multi-purpose-cleaners","en:household-cleaners","en:cleaning-products","en:cleaners"]]
 ];
 const BASE = {food:"https://world.openfoodfacts.org", beauty:"https://world.openbeautyfacts.org", product:"https://world.openproductsfacts.org"};
-const FFIELDS = "code,product_name,product_name_fr,brands,image_front_small_url,nutriscore_grade,nova_group,additives_tags,labels_tags,categories_tags";
+const FFIELDS = "code,product_name,product_name_fr,generic_name,generic_name_fr,brands,image_front_small_url,nutriscore_grade,nova_group,additives_tags,labels_tags,labels,categories_tags,categories,origins,quantity,ingredients_text,ingredients_text_fr,nutriments";
 const CFIELDS = "code,product_name,product_name_fr,brands,image_front_small_url,ingredients_text,ingredients_text_fr,ingredients_text_en,categories_tags,product_type";
 const UA = "MonScan/1.0 (https://github.com/Aurelien124/mon-scan)";
 const ORGANIC = ["en:organic","en:eu-organic","fr:ab-agriculture-biologique"];
@@ -110,8 +119,10 @@ async function search(base, tag, food){
 (async()=>{
   const out = {date:new Date().toISOString().slice(0,10), fam:[]};
   let prev = null; try{ prev = JSON.parse(fs.readFileSync(path.join(ROOT,"top.json"),"utf8")); }catch(e){}
+  const ONLY = (process.env.ONLY||"").split(",").map(x=>x.trim()).filter(Boolean);
   for(const [id,g,t,base,tags] of FAM){
     const food = base==="food";
+    if(ONLY.length && !ONLY.includes(id)){ const old = prev && prev.fam.find(f=>f.id===id); if(old) out.fam.push(old); continue; }
     let prods = null, used = null;
     for(const tag of tags){
       const r = await search(base, tag, food); await sleep(7000);
@@ -127,14 +138,15 @@ async function search(base, tag, food){
     }
     const seen = new Set(), items = [];
     for(const p of prods){
-      const name = p.product_name_fr || p.product_name;
+      const name = String(p.product_name_fr || p.product_name || "").replace(/\\(.)/g,"$1").trim();
       if(!p.code || !name || seen.has(p.code)) continue;
       let s, it;
       let k = 0;
       if(food){
         if(!/^[a-e]$/.test(String(p.nutriscore_grade||""))) continue; // note complète seulement
         const r = analyse(p, W); s = r.score; k = r.adds.length;
-        it = {c:p.code, n:name, b:p.brands||"", i:p.image_front_small_url||"", g:p.nutriscore_grade, nv:Number(p.nova_group)||0,
+        var fk = famBonus(p, r.adds.map(x=>x.code));
+        it = {fk, c:p.code, n:name, b:p.brands||"", i:p.image_front_small_url||"", g:p.nutriscore_grade, nv:Number(p.nova_group)||0,
               ad:(p.additives_tags||[]).map(x=>x.replace(/^en:/,"")), bio:(p.labels_tags||[]).some(x=>ORGANIC.includes(x))?1:0};
       }else{
         p._src = base;
@@ -146,7 +158,7 @@ async function search(base, tag, food){
       if(s==null) continue;
       seen.add(p.code); it.s = s; it._k = k; items.push(it);
     }
-    items.sort((x,y)=>y.s-x.s || x._k-y._k);
+    items.sort((x,y)=>y.s-x.s || (y.fk||0)-(x.fk||0) || x._k-y._k);
     items.forEach(it=>delete it._k);
     console.log(id.padEnd(16), used.padEnd(34), String(prods.length).padStart(3), "lus,", String(items.length).padStart(3), "notés, meilleur", items[0]?items[0].s:"-");
     out.fam.push({id, g, t, src:base, tag:used, n:items.length, p:items.slice(0,15)});

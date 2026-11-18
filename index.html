@@ -861,12 +861,27 @@ async function lookup(raw, opt){
   if(code.length<8){ say("Un code-barres compte 8 ou 13 chiffres. Vérifiez la saisie.",true); return; }
   $("#code").value = code;
   say("Recherche du produit "+code+"…");
-  const res = await Promise.allSettled(SOURCES.map(src=>fetchFrom(src,code)));
-  const hit = res.find(r=>r.status==="fulfilled" && r.value);
+  const seq = searchSeq;
+  let res = await Promise.allSettled(SOURCES.map(src=>fetchFrom(src,code)));
+  let hit = res.find(r=>r.status==="fulfilled" && r.value);
+  // Une base qui refuse ou ne répond pas (saturée, trop de scans d'affilée) : deux nouveaux essais, espacés.
+  for(let k=0; !hit && k<2 && res.some(r=>r.status==="rejected") && navigator.onLine!==false; k++){
+    say("Une base ne répond pas, nouvel essai…");
+    await new Promise(r=>setTimeout(r, 1500*(k+1)));
+    if(seq!==searchSeq) return;
+    res = await Promise.all(res.map((r,i)=> r.status==="rejected" ? fetchFrom(SOURCES[i],code).then(v=>({status:"fulfilled",value:v}),e=>({status:"rejected",reason:e})) : r));
+    hit = res.find(r=>r.status==="fulfilled" && r.value);
+  }
+  if(seq!==searchSeq) return;
   if(!hit){
-    if(res.every(r=>r.status==="rejected")) say(navigator.onLine===false
-      ? "Pas de connexion, et ce produit n'a encore jamais été consulté : il n'est pas disponible hors ligne. Les produits déjà scannés, eux, s'ouvrent sans réseau."
-      : "Les bases Open Facts ne répondent pas. Vérifiez la connexion puis réessayez.",true);
+    const down = res.map((r,i)=>r.status==="rejected"?SOURCES[i][2]:null).filter(Boolean);
+    if(down.length){
+      say(navigator.onLine===false
+        ? "Pas de connexion, et ce produit n'a encore jamais été consulté : il n'est pas disponible hors ligne. Les produits déjà scannés, eux, s'ouvrent sans réseau."
+        : (down.length===SOURCES.length ? "Les bases Open Facts ne répondent pas." : down.join(" et ")+" ne répond pas pour le moment : impossible de savoir si le produit y est.")+" Réessayez dans un instant.",true);
+      $("#result").innerHTML = `<div class="card res"><button class="btn" type="button" data-code="${esc(code)}">Réessayer le produit ${esc(code)}</button></div>`;
+      afterRender();
+    }
     else notFound(code);
     return;
   }

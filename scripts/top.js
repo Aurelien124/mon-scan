@@ -30,6 +30,8 @@ const slug = x => String(x).toLowerCase().normalize("NFD").replace(/[\u0300-\u03
 const CMAP = {douche:"douche", savon:"douche", shampoing:"shampoing", "apres-shampoing":"shampoing", deo:"deo", dentifrice:"dentifrice",
   solaire:"solaire", visage:"visage", corps:"corps", mains:"corps", demaq:"demaq", lessive:"lessive", "lave-vaisselle":"vaisselle", vaisselle:"vaisselle", nettoyant:"nettoyant"};
 const PLUS = {dentifrice:["L'Arbre Vert"], douche:["L'Arbre Vert"], lessive:["L'Arbre Vert"], vaisselle:["L'Arbre Vert"]};
+// Marques cherchées dans toutes les familles cosmétiques, et dont tous les produits vont dans l'index de recherche.
+const PLUS_COSMETO = ["Aroma-Zone"];
 // Note affichée en tête de la famille dans l'onglet Top 10.
 const NOTE = {douche:"Selon La Famille Tortue, presque tous les gels douche du commerce contiennent un ingrédient qu'elle évite (bétaïnes, sulfates, parfum) : d'où des notes plafonnées à 49. Elle conseille plutôt un savon saponifié à froid : voir la famille « Savons »."};
 
@@ -153,7 +155,7 @@ async function search(base, tag, food, brand){
     }
     if(!food){
       const cf = CFAM.find(c=>c.id===CMAP[id]);
-      const brands = [...new Set([...(cf?cf.alts.map(a=>a[0]):[]), ...(PLUS[id]||[])].map(slug))];
+      const brands = [...new Set([...(cf?cf.alts.map(a=>a[0]):[]), ...(PLUS[id]||[]), ...(base==="beauty"?PLUS_COSMETO:[])].map(slug))];
       for(const br of brands){
         const key = base+"/"+br;
         if(!(key in BRAND_CACHE)){ BRAND_CACHE[key] = await search(base, null, false, br); await sleep(7000); }
@@ -194,6 +196,21 @@ async function search(base, tag, food, brand){
     console.log(id.padEnd(16), used.padEnd(34), String(prods.length).padStart(3), "lus,", String(items.length).padStart(3), "notés, meilleur", items[0]?items[0].s:"-");
     out.fam.push(Object.assign({id, g, t, src:base, tag:used, n:items.length, p:items.slice(0,15)}, NOTE[id]?{note:NOTE[id]}:{}));
   }
+  // Index des marques suivies : tous leurs produits, même hors des familles du Top.
+  const followed = [...new Set([...PLUS_COSMETO, ...CFAM.filter(c=>c.t!=="menager").flatMap(c=>c.alts.map(a=>a[0]))].map(slug))];
+  const bl = [];
+  for(const br of followed){
+    const key = "beauty/"+br;
+    if(!(key in BRAND_CACHE)){ BRAND_CACHE[key] = await search("beauty", null, false, br); await sleep(7000); }
+    for(const p of BRAND_CACHE[key]||[]){
+      const name = String(p.product_name_fr || p.product_name || "").replace(/\\(.)/g,"$1").trim();
+      if(!p.code || !name) continue;
+      p._src = "beauty"; const r = analyseCosmetic(p, {lft:true, lftScore:true});
+      bl.push([p.code, name, p.brands||"", r.toks.length && !r.doubtful ? r.score : null]);
+    }
+  }
+  if(bl.length) idx.fam["marques-suivies"] = {src:"beauty", l:bl}; else keepIdx("marques-suivies");
+  console.log("marques suivies :", bl.length, "produits");
   fs.writeFileSync(path.join(ROOT,"top.json"), JSON.stringify(out));
   fs.writeFileSync(path.join(ROOT,"search.json"), JSON.stringify(idx));
   console.log("search.json :", Object.values(idx.fam).reduce((t,f)=>t+f.l.length,0), "produits");

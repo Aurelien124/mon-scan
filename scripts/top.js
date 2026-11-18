@@ -22,6 +22,15 @@ function famBonus(p, adds){
   return familyCheck(p, fam, adds).hits.reduce((t,h)=>t+(h.t==="good"?1:h.t==="warn"?-1:h.t==="bad"?-2:0),0);
 }
 const W = [60,30,0,10];
+const CFAM = vm.runInContext("CFAM", ctx);
+const slug = x => String(x).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+// Famille du Top -> famille de produits de kbc.js : ses marques recommandées par La Famille Tortue sont ajoutées aux candidats,
+// même si elles ne sont pas parmi les plus scannées. PLUS : marques ajoutées à la demande de l'utilisateur.
+const CMAP = {douche:"douche", savon:"douche", shampoing:"shampoing", "apres-shampoing":"shampoing", deo:"deo", dentifrice:"dentifrice",
+  solaire:"solaire", visage:"visage", corps:"corps", mains:"corps", demaq:"demaq", lessive:"lessive", "lave-vaisselle":"vaisselle", vaisselle:"vaisselle", nettoyant:"nettoyant"};
+const PLUS = {dentifrice:["L'Arbre Vert"], douche:["L'Arbre Vert"], lessive:["L'Arbre Vert"], vaisselle:["L'Arbre Vert"]};
+// Note affichée en tête de la famille dans l'onglet Top 10.
+const NOTE = {douche:"Selon La Famille Tortue, presque tous les gels douche du commerce contiennent un ingrédient qu'elle évite (bétaïnes, sulfates, parfum) : d'où des notes plafonnées à 49. Elle conseille plutôt un savon saponifié à froid : voir la famille « Savons »."};
 
 /* ---------- Familles ---------- */
 // [id, groupe, titre, base (food|beauty|product), étiquettes de catégorie Open Facts]
@@ -103,8 +112,8 @@ const UA = "MonScan/1.0 (https://github.com/Aurelien124/mon-scan)";
 const ORGANIC = ["en:organic","en:eu-organic","fr:ab-agriculture-biologique"];
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
 
-async function search(base, tag, food){
-  const url = BASE[base]+"/api/v2/search?categories_tags="+encodeURIComponent(tag)+"&countries_tags=en:france&page_size=100&sort_by=unique_scans_n&fields="+(food?FFIELDS:CFIELDS);
+async function search(base, tag, food, brand){
+  const url = BASE[base]+"/api/v2/search?categories_tags="+encodeURIComponent(tag)+(brand?"&brands_tags="+encodeURIComponent(brand)+"&page_size=30":"&countries_tags=en:france&page_size=100")+"&sort_by=unique_scans_n&fields="+(food?FFIELDS:CFIELDS);
   for(let i=0;i<4;i++){
     try{
       const r = await fetch(url, {headers:{"User-Agent":UA}, signal:AbortSignal.timeout(60000)});
@@ -136,6 +145,16 @@ async function search(base, tag, food){
       if(old) out.fam.push(old);
       continue;
     }
+    if(!food){
+      const cf = CFAM.find(c=>c.id===CMAP[id]);
+      const brands = [...new Set([...(cf?cf.alts.map(a=>a[0]):[]), ...(PLUS[id]||[])].map(slug))];
+      for(const br of brands){
+        const r = await search(base, used, false, br); await sleep(7000);
+        const known = new Set(prods.map(x=>x.code)); let add = 0;
+        for(const x of r||[]) if(!known.has(x.code)){ prods.push(x); add++; }
+        console.log("   + marque", br, r?r.length+" trouvés, "+add+" ajoutés":"échec");
+      }
+    }
     const seen = new Set(), items = [];
     for(const p of prods){
       const name = String(p.product_name_fr || p.product_name || "").replace(/\\(.)/g,"$1").trim();
@@ -161,7 +180,7 @@ async function search(base, tag, food){
     items.sort((x,y)=>y.s-x.s || (y.fk||0)-(x.fk||0) || x._k-y._k);
     items.forEach(it=>delete it._k);
     console.log(id.padEnd(16), used.padEnd(34), String(prods.length).padStart(3), "lus,", String(items.length).padStart(3), "notés, meilleur", items[0]?items[0].s:"-");
-    out.fam.push({id, g, t, src:base, tag:used, n:items.length, p:items.slice(0,15)});
+    out.fam.push(Object.assign({id, g, t, src:base, tag:used, n:items.length, p:items.slice(0,15)}, NOTE[id]?{note:NOTE[id]}:{}));
   }
   fs.writeFileSync(path.join(ROOT,"top.json"), JSON.stringify(out));
   console.log("top.json :", out.fam.length, "familles,", Math.round(fs.statSync(path.join(ROOT,"top.json")).size/1024), "Ko");

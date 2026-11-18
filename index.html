@@ -701,7 +701,7 @@ $("#toplist").addEventListener("toggle", e=>{
   const d = e.target; if(!d.matches || !d.matches("details[data-f]") || !d.open) return;
   const f = TOP && TOP.fam.find(x=>x.id===d.dataset.f); if(!f) return;
   const list = topItems(f).slice(0,10);
-  d.querySelector(".topbody").innerHTML = list.length ? `${list.length>1&&list.every(o=>o.rank===1)?'<p class="small muted">Tous ex æquo : la note ne départage pas ces produits (voir la fiche de la famille dans Guides).</p>':""}<ul class="alts toplist">${list.map(o=>prodBtn(o.it.c,o.it.n,o.it.b,o.s,o.it.i,(list.filter(x=>x.rank===o.rank).length>1?"=":"")+o.rank)).join("")}</ul>` : '<p class="small muted">Pas assez de fiches complètes.</p>';
+  d.querySelector(".topbody").innerHTML = list.length ? `${f.note?`<p class="small muted">${esc(f.note)}</p>`:""}${list.length>1&&list.every(o=>o.rank===1)?'<p class="small muted">Tous ex æquo : la note ne départage pas ces produits (voir la fiche de la famille dans Guides).</p>':""}<ul class="alts toplist">${list.map(o=>prodBtn(o.it.c,o.it.n,o.it.b,o.s,o.it.i,(list.filter(x=>x.rank===o.rank).length>1?"=":"")+o.rank)).join("")}</ul>` : '<p class="small muted">Pas assez de fiches complètes.</p>';
 }, true);
 $("#toplist").addEventListener("click", e=>{
   const b = e.target.closest("[data-alt]"); if(!b) return;

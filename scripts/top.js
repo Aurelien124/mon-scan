@@ -53,7 +53,7 @@ const MUST = {
   oeufs:/oeuf|egg/, riz:/\briz\b|rice|basmati|risotto/, chips:/chip/, beurre:/beurre|butter/, brioches:/brioch|gache/,
   "jus-orange":/jus|juice|nectar|orange/, "jus-pomme":/jus|juice|pomme|apple/,
   "fromage-blanc":/fromage blanc|faisselle|fromages? frais|skyr|quark|fromage battu/,
-  "huile-olive":/olive/, "sauce-tomate":/tomat|bolognaise|arrabbiata|basilic|napolitaine|sugo|passata|provencal/
+  "huile-olive":/olive/, "foie-gras":/foie gras/, "sauce-tomate":/tomat|bolognaise|arrabbiata|basilic|napolitaine|sugo|passata|provencal/
 };
 const nrm = x => String(x||"").toLowerCase().replace(/œ/g,"oe").replace(/æ/g,"ae").normalize("NFD").replace(/[\u0300-\u036f]/g,"");
 // Vendu en France : fiche marquée France et scannée en France (étiquette de popularité Open Facts « …-fr-scans-… »).
@@ -109,6 +109,7 @@ const FAM = [
   ["steak-hache","Alimentation","Steaks hachés","food",["en:ground-beef-steaks","en:ground-beef"]],
   ["poulet","Alimentation","Blanc de poulet","food",["en:chicken-breasts","en:chicken-breast-slices"]],
   ["saumon-fume","Alimentation","Saumon fumé","food",["en:smoked-salmons"]],
+  ["foie-gras","Alimentation","Foie gras","food",["en:foies-gras","en:duck-foie-gras","en:foie-gras"]],
   ["thon","Alimentation","Thon en conserve","food",["en:canned-tunas"]],
   ["sardines","Alimentation","Sardines","food",["en:sardines"]],
   ["maquereau","Alimentation","Maquereaux","food",["en:mackerels"]],

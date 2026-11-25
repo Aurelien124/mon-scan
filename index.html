@@ -152,6 +152,7 @@ header.top h1{cursor:pointer}
 #gsearch,#topsearch{width:100%;box-sizing:border-box;font:inherit;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:11px 12px}
 .lv0{background:var(--good)} .lv1{background:var(--ok)} .lv2{background:var(--warn)} .lv3{background:var(--bad)}
 .alert{border-left:4px solid var(--warn);background:var(--tint);padding:8px 12px;border-radius:0 8px 8px 0;font-size:14.5px}
+.alert.green{border-left-color:var(--good)}
 .alert.red{border-left-color:var(--bad)}
 table{border-collapse:collapse;width:100%;font-size:14.5px}
 td{padding:6px 0;border-bottom:1px solid var(--line)}
@@ -445,6 +446,13 @@ function normAdd(tag){
   if(m[2] && !/^[ivx]+$/.test(m[2]) && ADD["e"+m[1]+m[2][0]]) return "e"+m[1]+m[2][0];
   return "e"+m[1];
 }
+function testsFor(p){
+  if(typeof TESTS==="undefined" || !p) return [];
+  const now = new Date().toISOString().slice(0,7);
+  const brand = norm(p.brands), name = norm([p.product_name_fr, p.product_name, p.generic_name_fr, p.generic_name].filter(Boolean).join(" "));
+  if(!brand || !name) return [];
+  return TESTS.filter(t => (!t.exp || t.exp >= now) && t.m.test(brand) && t.w.every(r=>r.test(name)) && !(t.no && t.no.test(name)));
+}
 function analyse(p, w){
   const adds = [...new Set((p.additives_tags||[]).map(normAdd).filter(Boolean))].map(c=>{
     const k = ADD[c]; return {code:c, level:k?k[0]:1, name:k?k[1]:"Non classé dans ma grille", known:!!k};
@@ -467,7 +475,13 @@ function analyse(p, w){
   let score = tot>0 ? Math.round(sum/tot) : null;
   const capped = score!=null && adds.some(a=>a.level===3) && score>49;
   if(capped) score = 49;
-  return {score, parts, adds, organic, nova:T!=null?nova:null, grade:g in N_PTS?g:null, missing, capped,
+  // Résultats de tests sur ce produit précis (kb.js, TESTS) : bonus ou malus, puis plafond si défaut grave.
+  const tests = testsFor(p), before = score;
+  if(score!=null){
+    for(const t of tests) if(t.d) score = Math.max(0, Math.min(100, score + t.d));
+    for(const t of tests) if(t.cap!=null && score>t.cap) score = t.cap;
+  }
+  return {score, parts, adds, organic, nova:T!=null?nova:null, grade:g in N_PTS?g:null, missing, capped, tests, testDelta: score!=null&&before!=null ? score-before : 0,
           palm:(p.ingredients_analysis_tags||[]).includes("en:palm-oil")};
 }
 function verdict(s){
@@ -529,6 +543,7 @@ function renderProduct(p, isSample){
     </div>
     ${a.missing.length||a.capped?`<p class="line">${a.missing.length?`Note partielle : ${esc(a.missing.join(", ").toLowerCase())} absent${a.missing.length>1?"s":""}. `:""}${a.capped?"Plafonnée à 49 : additif « à éviter ».":""}</p>`:""}
     ${alerts.map(([t,c])=>`<div class="alert ${c}">${t}</div>`).join("")}
+    ${a.tests.map(t=>`<div class="alert ${t.cap!=null?"red":t.d>0?"green":""}">${esc(t.t)} <span class="small">${t.cap!=null?`Note plafonnée à ${t.cap}.`:t.d?`Note ${t.d>0?"+":""}${t.d}.`:"Sans effet sur la note."} <a href="${esc(t.url)}" target="_blank" rel="noopener">Source</a>${t.url2?` · <a href="${esc(t.url2)}" target="_blank" rel="noopener">Source 2</a>`:""}</span></div>`).join("")}
     ${fam?`<div class="famline"><div><b>${esc(fam.title)}</b> · <span style="color:${fc.verdict[1]};font-weight:700">${fc.verdict[0]}</span></div>
       ${keyHits.length?`<ul class="list">${keyHits.map(h=>`<li><span class="dot ${DOT[h.t]}"></span><span>${h.m}</span></li>`).join("")}</ul>`:""}</div>`:""}
     ${fam && (fc.hits.length>3||fc.miss.length)?`<details class="sec"><summary>Tous les critères de la famille<span class="cnt">${fc.hits.length+fc.miss.length}</span></summary>
@@ -620,7 +635,7 @@ function getTop(){
   return topLoading;
 }
 function topScore(it, src){
-  if(src==="food"){ const a = analyse({nutriscore_grade:it.g, nova_group:it.nv||undefined, additives_tags:(it.ad||[]).map(a=>"en:"+a), labels_tags:it.bio?["en:organic"]:[]}, settings.w); return {s:a.score, k:a.adds.length}; }
+  if(src==="food"){ const a = analyse({product_name:it.n, brands:it.b, nutriscore_grade:it.g, nova_group:it.nv||undefined, additives_tags:(it.ad||[]).map(a=>"en:"+a), labels_tags:it.bio?["en:organic"]:[]}, settings.w); return {s:a.score, k:a.adds.length}; }
   const a = analyseCosmetic({code:it.c, product_name:it.n, brands:it.b, ingredients_text:it.inci, _src:src}, {lft:settings.lft, lftScore:settings.lftScore});
   return {s:a.score, k:a.offHits.length+a.lftHits.length};
 }

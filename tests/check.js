@@ -1,8 +1,16 @@
 // Vérifie que kb.js est valide et cohérent. Lancer : node tests/check.js
 const fs = require("fs"), path = require("path");
 const code = fs.readFileSync(path.join(__dirname, "..", "kb.js"), "utf8");
-const { KB, JOURNAL } = new Function(code + "; return {KB, JOURNAL};")();
+const { KB, JOURNAL, TESTS } = new Function(code + "; return {KB, JOURNAL, TESTS: typeof TESTS===\"undefined\" ? [] : TESTS};")();
 const errs = [], ids = new Set(), TYPES = ["good", "info", "warn", "bad"];
+for (const [i, t] of TESTS.entries()) {
+  const w = m => errs.push(`[TESTS ${i + 1}] ${m}`);
+  if (!(t.m instanceof RegExp) || /[àâäéèêëîïôöùûüçœ]/i.test(t.m.source)) w("m doit être une regex sans accents");
+  if (!Array.isArray(t.w) || !t.w.length || t.w.some(r => !(r instanceof RegExp) || /[àâäéèêëîïôöùûüçœ]/i.test(r.source))) w("w doit être une liste de regex sans accents");
+  if (t.d == null && t.cap == null) w("ni d ni cap");
+  if (!t.t || !/^https:\/\//.test(t.url || "")) w("texte ou url manquant");
+  if (!/^\d{4}-\d{2}$/.test(t.exp || "")) w("exp doit être AAAA-MM");
+}
 for (const g of KB) {
   const w = m => errs.push(`[${g.id || "?"}] ${m}`);
   for (const k of ["id", "g", "title", "sub", "lead"]) if (typeof g[k] !== "string" || !g[k]) w(`champ manquant : ${k}`);

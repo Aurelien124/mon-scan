@@ -392,9 +392,40 @@ const KB = [
 /* ================= JOURNAL DES MISES À JOUR =================
    Ajouter une ligne EN TÊTE à chaque mise à jour : ["AAAA-MM-JJ", "ce qui a changé, en une phrase"]. */
 const JOURNAL = [
+  ["2026-11-25", "Résultats de tests par produit : la note tient compte des tests d'associations (saumons et truites fumés Que Choisir 2026, huile d'olive déclassée)."],
   ["2026-11-25", "Saumon fumé et foie gras : enseignements du magazine Que Choisir de décembre 2026 (contaminants et bio, labels MSC et ASC, IGP, conservation, substituts végétaux)."],
   ["2026-11-25", "Nouvelle fiche foie gras (appellations DGCCRF, test Que Choisir 2025) ; saumon fumé : tests Que Choisir et 60 Millions de fin 2025, précautions Listeria et grossesse."],
   ["2026-11-18", "Huile d'olive : ajout des résultats des tests Que Choisir et 60 Millions de 2025 (catégorie « vierge extra » souvent non tenue, contaminants fréquents, bio compris)."],
   ["2026-11-17", "Passage LaNutrition.fr : pain, céréales, yaourts, margarines et jus vérifiés et complétés (16 fiches vérifiées sur 28) ; source erronée de la fiche jus corrigée."],
   ["2026-11-16", "Création de la base : 28 familles, dont 11 vérifiées sur sources."]
+];
+
+/* Résultats de tests par produit (associations, contrôles officiels). Ils corrigent la note des produits testés :
+   m = marque (regex sur la marque, sans accents) ; w = mots qui doivent tous figurer dans le nom ; no = mots exclus ;
+   d = points ajoutés ou retirés ; cap = note maximale (défaut grave relevé) ; exp = date (AAAA-MM) après laquelle le résultat ne compte plus.
+   Seulement des sources fiables (tests d'associations, DGCCRF, RappelConso), jamais un article de presse isolé. */
+const TESTS = [
+  {m:/golden seafood/, w:[/saumon/], d:5, t:"Test Que Choisir (décembre 2026) : 1er sur 11 saumons fumés, 14,2/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/petit navire/, w:[/saumon/,/25|sel/], d:5, t:"Test Que Choisir (décembre 2026) : 2e sur 11 saumons fumés, 13,9/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/delpierre/, w:[/saumon/,/ecosse/], d:5, t:"Test Que Choisir (décembre 2026) : 3e sur 11 saumons fumés, 13,7/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/nautica/, w:[/saumon/,/ecosse/], d:5, t:"Test Que Choisir (décembre 2026) : 4e sur 11 saumons fumés, 13,5/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/auchan/, w:[/saumon/,/pacifique|saumon rouge/], no:/bio/, d:5, t:"Test Que Choisir (décembre 2026) : 5e sur 11 saumons fumés, 13,5/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/simpl/, w:[/saumon/], d:5, t:"Test Que Choisir (décembre 2026) : 6e sur 11 saumons fumés, 13,2/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/labeyrie/, w:[/saumon/,/norvege/], no:/pacifique|saumon rouge/, d:5, t:"Test Que Choisir (décembre 2026) : 7e sur 11 saumons fumés, 13,1/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/bio village/, w:[/saumon/], d:5, t:"Test Que Choisir (décembre 2026) : 8e sur 11 saumons fumés, 12,4/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/(^|, ?)u( |,|$)|systeme u|magasins u/, w:[/saumon/,/pacifique|saumon rouge/], d:5, t:"Test Que Choisir (décembre 2026) : 9e sur 11 saumons fumés, 12,2/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/mowi/, w:[/saumon/,/bio/], d:0, t:"Test Que Choisir (décembre 2026) : 10e sur 11 saumons fumés, 12/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/labeyrie/, w:[/saumon/,/pacifique|saumon rouge/], d:0, t:"Test Que Choisir (décembre 2026) : 11e sur 11 saumons fumés, 12/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/ronde des mers/, w:[/truite/], d:5, t:"Test Que Choisir (décembre 2026) : 1er sur 11 truites fumées, 15,1/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/ovive/, w:[/truite/,/france/], no:/aquitaine/, d:5, t:"Test Que Choisir (décembre 2026) : 2e sur 11 truites fumées, 13,3/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/landvika/, w:[/truite/], d:5, t:"Test Que Choisir (décembre 2026) : 3e sur 11 truites fumées, 12,9/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/ovive/, w:[/truite/,/aquitaine/], d:5, t:"Test Que Choisir (décembre 2026) : 4e sur 11 truites fumées, 12,4/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/pouce/, w:[/truite/], d:5, t:"Test Que Choisir (décembre 2026) : 5e sur 11 truites fumées, 12,3/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/pecheries basques/, w:[/truite/], d:0, t:"Test Que Choisir (décembre 2026) : 6e sur 11 truites fumées, 12/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/delpeyrat/, w:[/truite/], d:0, t:"Test Que Choisir (décembre 2026) : 7e sur 11 truites fumées, 11,9/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/labeyrie/, w:[/truite/], d:0, t:"Test Que Choisir (décembre 2026) : 8e sur 11 truites fumées, 11,9/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/odyssee/, w:[/truite/], d:0, t:"Test Que Choisir (décembre 2026) : 9e sur 11 truites fumées, 11,4/20.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/sources du courlis/, w:[/truite/], cap:49, t:"Test Que Choisir (décembre 2026) : 10e sur 11 truites fumées, 8/20. Mercure : très mauvais résultat.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/(^|, ?)u( |,|$)|systeme u|magasins u/, w:[/truite/,/bio/], cap:49, t:"Test Que Choisir (décembre 2026) : 11e sur 11 truites fumées, 7,6/20. Mercure, dioxines et PCB : très mauvais résultats.", src:"Que Choisir", url:"https://www.quechoisir.org/comparatif-truites-et-saumons-fumes-n249", date:"2026-12", exp:"2029-12"},
+  {m:/terra delyssa/, w:[/olive/], cap:24, t:"Huile vendue « vierge extra » déclassée en « lampante » par Que Choisir (juin 2025), et taux élevé de DEHP (un phtalate) relevé par 60 Millions de consommateurs (avril 2025).", src:"Que Choisir, 60 Millions", url:"https://www.quechoisir.org/comparatif-huiles-d-olives-vierges-extra-n467/", url2:"https://www.connexionfrance.com/a/728760", date:"2025-06", exp:"2028-06"},
 ];

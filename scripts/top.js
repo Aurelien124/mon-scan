@@ -55,6 +55,8 @@ const MUST = {
   "fromage-blanc":/fromage blanc|faisselle|fromages? frais|skyr|quark|fromage battu/,
   "huile-olive":/olive/, "foie-gras":/foie gras/, "herbes-provence":/provence/, poivre:/poivre|pepper/, cannelle:/cannelle|cinnamon/, curry:/curry|cari/, "sauce-tomate":/tomat|bolognaise|arrabbiata|basilic|napolitaine|sugo|passata|provencal/
 };
+// Familles où le Nutri-Score ne s'applique pas : classées sur les additifs, le bio et les résultats de tests.
+const NO_NS = new Set(["herbes-provence","poivre","cannelle","curry"]);
 const nrm = x => String(x||"").toLowerCase().replace(/œ/g,"oe").replace(/æ/g,"ae").normalize("NFD").replace(/[\u0300-\u036f]/g,"");
 // Vendu en France : fiche marquée France et scannée en France (étiquette de popularité Open Facts « …-fr-scans-… »).
 const inFrance = p => (p.countries_tags||[]).includes("en:france") && (p.popularity_tags||[]).some(t=>/-fr-scans-/.test(t));
@@ -213,7 +215,7 @@ async function search(base, tag, food, brand){
       let k = 0;
       if(food){
         if(p.product_type && p.product_type!=="food") continue; // cosmétique ou produit ménager rangé par erreur dans la base aliments
-        if(!/^[a-e]$/.test(String(p.nutriscore_grade||""))) continue; // note complète seulement
+        if(!NO_NS.has(id) && !/^[a-e]$/.test(String(p.nutriscore_grade||""))) continue; // note complète seulement (sauf épices, sans Nutri-Score)
         const r = analyse(p, W); s = r.score; k = r.adds.length;
         var fk = famBonus(p, r.adds.map(x=>x.code));
         it = {fk, c:p.code, n:name, b:p.brands||"", i:p.image_front_small_url||"", g:p.nutriscore_grade, nv:Number(p.nova_group)||0,

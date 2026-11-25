@@ -86,19 +86,31 @@ function lftProduct(p){
 }
 function isPartner(marque){ return LFT_PARTENAIRES.some(x=>sameBrand(marque,x)); }
 
+/* Résultats de tests sur ce produit précis (liste TESTS de kb.js) : marque + mots du nom. */
+function testsForC(p){
+  if(typeof TESTS==="undefined" || !p) return [];
+  const now = new Date().toISOString().slice(0,7);
+  const brand = cnorm(p.brands), name = cnorm([p.product_name_fr, p.product_name, p.generic_name_fr, p.generic_name].filter(Boolean).join(" "));
+  if(!brand || !name) return [];
+  return TESTS.filter(t => (!t.exp || t.exp >= now) && t.m.test(brand) && t.w.every(r=>r.test(name)) && !(t.no && t.no.test(name)));
+}
 /* Note indicative de l'appli (0-100) et verdict. */
 function analyseCosmetic(p, opts){
   const o = Object.assign({lft:true, lftScore:true}, opts||{});
-  const {toks, hits} = matchIngredients(p);
+  let {toks, hits} = matchIngredients(p);
+  // Les interdictions de kbc.js viennent du règlement cosmétiques : pour un produit ménager, elles deviennent un point d'attention.
+  if(p && p._src==="product") hits = hits.map(h => h.g.off && h.g.off[0]===3 ? Object.assign({}, h, {g:Object.assign({}, h.g, {off:[2, h.g.off[1]+" Cette interdiction vise les cosmétiques, pas les produits ménagers.", h.g.off[2]]})}) : h);
   const offHits = hits.filter(h=>h.g.off && h.g.off[0]>=1).sort((a,b)=>b.g.off[0]-a.g.off[0]);
   const lftHits = o.lft ? hits.filter(h=>h.g.lft && h.g.lft[0]>0).sort((a,b)=>b.g.lft[0]-a.g.lft[0]||a.first-b.first) : [];
   const lftOk = o.lft ? hits.filter(h=>h.g.lft && h.g.lft[0]<0) : [];
   let score = null;
+  const tests = testsForC(p), tD = tests.reduce((t,x)=>t+(x.d||0),0);
   const nEvite = lftHits.filter(h=>h.g.lft[0]===2).length;
   if(toks.length){
     score = 100;
     score -= Math.min(30, 10*offHits.filter(h=>h.g.off[0]===2).length);
     score -= Math.min(10, 5*offHits.filter(h=>h.g.off[0]===1).length);
+    score = Math.min(100, score + tD);   // résultat de test, avant les plafonds
     if(o.lftScore){
       /* Logique de La Famille Tortue : un seul ingrédient problématique suffit à sortir un produit du « clean ». */
       score -= 15*nEvite;
@@ -110,8 +122,9 @@ function analyseCosmetic(p, opts){
     score = Math.max(0, score);
     if(offHits.some(h=>h.g.off[0]===3)) score = Math.min(score, 10);
   }
+  if(score!=null) for(const t of tests) if(t.cap!=null && score>t.cap) score = t.cap;
   const bad = toks.filter(garbled);
-  return {toks, hits, offHits, lftHits, lftOk, score, nEvite, bad, doubtful: toks.length>0 && (bad.length>=2 || bad.length/toks.length>0.15 || toks.length<4),
+  return {toks, hits, offHits, lftHits, lftOk, score, nEvite, bad, tests, doubtful: toks.length>0 && (bad.length>=2 || bad.length/toks.length>0.15 || toks.length<4),
           interdit: offHits.some(h=>h.g.off[0]===3),
           fam: findCFam(p), marque: lftBrand(p), produit: lftProduct(p)};
 }

@@ -44,7 +44,8 @@ const SRC = [
   ["EUR-Lex, règlement 2026/405 sur les détergents", "https://eur-lex.europa.eu/eli/reg/2026/405/oj/fra/pdf"],                                                              // 25
   ["Que Choisir, allergènes non signalés dans les détergents", "https://www.quechoisir.org/actualite-detergents-menagers-des-allergenes-non-signales-aux-consommateurs-n132158/"], // 26
   ["WECF France, guide des produits ménagers 2025", "https://wecf-france.org/wp-content/uploads/2025/12/PRODUITS-MENAGERS-GUIDE2025_V6.pdf"],                              // 27
-  ["écoconso, composition des lessives", "https://ecoconso.be/fr/node/2061/printable/pdf"]                                                                                  // 28
+  ["écoconso, composition des lessives", "https://ecoconso.be/fr/node/2061/printable/pdf"],
+  ["60 Millions de consommateurs, test de 30 nettoyants ménagers (magazine, fin 2026)", "https://www.60millions-mag.com/"]                                     // 29                                                                                  // 28
 ];
 
 /* ---------- Familles d'ingrédients ---------- */
@@ -184,6 +185,8 @@ const INGC = [
    lft:[1,"Déforestation ; comédogène.",LFT+"2024/03/05/les-huiles-vegetales/"]},
   {id:"enzymes", nom:"Enzymes (lessives, lave-vaisselle)", re:/subtilisin|protease|amylase|lipase|cellulase|mannanase|^enzymes?$/, off:null,
    lft:[1,"Allergisantes, souvent issues d'OGM. Acceptées si certifiées non OGM.",LFT+"2026/03/06/comparatif-produits-lave-vaisselle/"]},
+  {id:"javel", nom:"Eau de Javel (hypochlorite de sodium)", re:/hypochlorite|\bjavel/, off:[2,"Pas d'interdiction. Jugée très agressive et polluante par 60 Millions de consommateurs : les nettoyants javellisés finissent en queue de son test de fin 2026.",[29]],
+   lft:null},
   {id:"polycarbox", nom:"Polycarboxylates", re:/polycarbox/, off:null,
    lft:[2,"Polymères peu biodégradables : elle les écarte des lessives et des produits lave-vaisselle.",LFT+"2021/04/23/les-lessives-ecologiques/"]},
   {id:"taed", nom:"TAED (activateur de blanchiment)", re:/\btaed\b|tetraacetylethylenediamine/, off:null,
@@ -265,7 +268,7 @@ const CFAM = [
    alts:[["Comme Avant","Poudre lave-vaisselle au sel de Camargue","2026/03/06/comparatif-produits-lave-vaisselle/",1],["Sonett","Pastilles lave-vaisselle","2026/03/06/comparatif-produits-lave-vaisselle/",0]],
    src:"2026/03/06/comparatif-produits-lave-vaisselle/"},
   {id:"nettoyant", t:"menager", title:"Nettoyant ménager", re:/clean|nettoy|menage|household|multi.?usage|multi.?purpose|wc|toilet|vitre|sol|degraiss|desinfect|anticalcaire|javel/,
-   tips:["Elle juge la désinfection du logement inutile au quotidien et déconseille les nettoyants sans rinçage du supermarché.","Savon noir, bicarbonate, cristaux de soude, percarbonate, acide citrique et vinaigre blanc couvrent presque tout."],
+   tips:["Elle juge la désinfection du logement inutile au quotidien et déconseille les nettoyants sans rinçage du supermarché.","Savon noir, bicarbonate, cristaux de soude, percarbonate, acide citrique et vinaigre blanc couvrent presque tout.","60 Millions (fin 2026) : seul l'Écolabel européen va toujours avec un faible risque pour la santé et l'environnement ; Ecocert Ecodétergent pas toujours, et Sustainable Cleaning (label de l'industrie) pas du tout.","60 Millions : les recettes maison (savon noir, vinaigre) nettoient moins bien mais ne polluent pas, bien pour l'entretien courant de surfaces peu sales.","Vinaigre ménager : le pourcentage indique l'acidité ; 8 % suffit, et à taux égal deux vinaigres se valent : prendre le moins cher, sans parfum (60 Millions).","Le prix n'est pas lié au classement : comparer le prix au litre (60 Millions)."],
    alts:[["Savon Arthur","Savon noir, acide citrique, bicarbonate, cristaux de soude","2025/02/06/routine-clean-menage-occasionnel/",1],["Senza","Savon noir","2025/01/24/routine-clean-menage-quotidien/",1],["La Fourche","Percarbonate de soude","2025/01/24/routine-clean-menage-quotidien/",1]],
    src:"2025/01/24/routine-clean-menage-quotidien/"}
 ];
@@ -339,6 +342,7 @@ const LFT_PRODUITS = [
 const LFT_PARTENAIRES = ["comme avant","savon arthur","senza","la fourche","gaelle besse","veraem","lao"];
 
 const JOURNAL_C = [
+  ["2026-11-25", "Ménager : eau de Javel reconnue, conseils et résultats du test 60 Millions de consommateurs de fin 2026 (labels, recettes maison, vinaigre)."],
   ["2026-11-18", "« Aroma » (arôme des dentifrices) n'est plus compté comme parfum : La Famille Tortue recommande des dentifrices qui en contiennent. Oxyde de zinc nano : « à limiter » et non plus « à éviter », comme dans son article sur les crèmes solaires."],
   ["2026-11-18", "Produits ménagers : les étiquettes en français réglementaire sont mieux lues (parfums, polycarboxylates, TAED, azurants optiques, phosphonates)."],
   ["2026-11-17", "Les produits dont la liste d'ingrédients est mal lue ou trop courte sont signalés dans l'historique, pour les corriger sur Open Beauty Facts."],

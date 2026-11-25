@@ -495,6 +495,9 @@ function verdict(s){
 /* ---------- Affichage produit ---------- */
 function safeImg(u){ try{const x=new URL(u); return x.protocol==="https:" && /(^|\.)open(food|beauty|products|petfood)facts\.org$/.test(x.hostname) ? x.href : null}catch(e){return null} }
 function fmt(v,unit){ return v==null||v===""||isNaN(Number(v)) ? "–" : (Math.round(Number(v)*10)/10).toString().replace(".",",")+" "+unit; }
+function testAlerts(tests){
+  return (tests||[]).map(t=>`<div class="alert ${t.cap!=null?"red":t.d>0?"green":""}">${esc(t.t)} <span class="small">${t.cap!=null?`Note plafonnée à ${t.cap}${t.d?`, et ${t.d>0?"+":""}${t.d} points`:""}.`:t.d?`Note ${t.d>0?"+":""}${t.d}.`:"Sans effet sur la note."} <a href="${esc(t.url)}" target="_blank" rel="noopener">Source</a>${t.url2?` · <a href="${esc(t.url2)}" target="_blank" rel="noopener">Source 2</a>`:""}</span></div>`).join("");
+}
 function rhead(p, score, vt, vc, tag){
   const img = safeImg(p.image_front_small_url);
   const name = p.product_name_fr || p.product_name || "Produit sans nom";
@@ -543,7 +546,7 @@ function renderProduct(p, isSample){
     </div>
     ${a.missing.length||a.capped?`<p class="line">${a.missing.length?`Note partielle : ${esc(a.missing.join(", ").toLowerCase())} absent${a.missing.length>1?"s":""}. `:""}${a.capped?"Plafonnée à 49 : additif « à éviter ».":""}</p>`:""}
     ${alerts.map(([t,c])=>`<div class="alert ${c}">${t}</div>`).join("")}
-    ${a.tests.map(t=>`<div class="alert ${t.cap!=null?"red":t.d>0?"green":""}">${esc(t.t)} <span class="small">${t.cap!=null?`Note plafonnée à ${t.cap}.`:t.d?`Note ${t.d>0?"+":""}${t.d}.`:"Sans effet sur la note."} <a href="${esc(t.url)}" target="_blank" rel="noopener">Source</a>${t.url2?` · <a href="${esc(t.url2)}" target="_blank" rel="noopener">Source 2</a>`:""}</span></div>`).join("")}
+    ${testAlerts(a.tests)}
     ${fam?`<div class="famline"><div><b>${esc(fam.title)}</b> · <span style="color:${fc.verdict[1]};font-weight:700">${fc.verdict[0]}</span></div>
       ${keyHits.length?`<ul class="list">${keyHits.map(h=>`<li><span class="dot ${DOT[h.t]}"></span><span>${h.m}</span></li>`).join("")}</ul>`:""}</div>`:""}
     ${fam && (fc.hits.length>3||fc.miss.length)?`<details class="sec"><summary>Tous les critères de la famille<span class="cnt">${fc.hits.length+fc.miss.length}</span></summary>
@@ -612,6 +615,7 @@ function renderCosmetic(p){
     ${a.toks.length?"":`<div class="alert">Liste d'ingrédients absente de la fiche : composition non analysée. Vous pouvez la compléter sur ${esc(src[2])} (lien dans « Ingrédients »).</div>`}
     ${a.doubtful?`<div class="alert red">Liste d'ingrédients mal lue ou incomplète (${a.toks.length} lus, ${a.bad.length} illisible${a.bad.length>1?"s":""}) : des ingrédients peuvent échapper à l'analyse. Corrigez-la sur ${esc(src[2])} (lien dans « Ingrédients »).</div>`:""}
     ${a.interdit?`<div class="alert red">Contient un ingrédient interdit aujourd'hui : le produit est peut-être ancien.</div>`:""}
+    ${testAlerts(a.tests)}
     ${chips.length?`<div class="chips">${chips.join("")}</div>`:""}
     ${settings.lft&&(a.produit||a.marque)?`<p class="line">${a.produit?`La Famille Tortue a noté ce produit <b>${esc(a.produit[2])}</b> · <a href="${lftUrl(a.produit[3])}" target="_blank" rel="noopener">article</a>`:`Marque analysée par La Famille Tortue : <b>${esc(a.marque[1])}</b> · <a href="${lftUrl(a.marque[2])}" target="_blank" rel="noopener">article</a>`}</p>`:""}
     ${settings.lft?`<details class="sec"><summary>Selon La Famille Tortue<span class="cnt">${a.lftHits.length}</span></summary>${lftBlock}</details>`:""}

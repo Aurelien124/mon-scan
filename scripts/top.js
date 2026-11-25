@@ -53,7 +53,7 @@ const MUST = {
   oeufs:/oeuf|egg/, riz:/\briz\b|rice|basmati|risotto/, chips:/chip/, beurre:/beurre|butter/, brioches:/brioch|gache/,
   "jus-orange":/jus|juice|nectar|orange/, "jus-pomme":/jus|juice|pomme|apple/,
   "fromage-blanc":/fromage blanc|faisselle|fromages? frais|skyr|quark|fromage battu/,
-  "huile-olive":/olive/, "foie-gras":/foie gras/, "sauce-tomate":/tomat|bolognaise|arrabbiata|basilic|napolitaine|sugo|passata|provencal/
+  "huile-olive":/olive/, "foie-gras":/foie gras/, "herbes-provence":/provence/, poivre:/poivre|pepper/, cannelle:/cannelle|cinnamon/, curry:/curry|cari/, "sauce-tomate":/tomat|bolognaise|arrabbiata|basilic|napolitaine|sugo|passata|provencal/
 };
 const nrm = x => String(x||"").toLowerCase().replace(/œ/g,"oe").replace(/æ/g,"ae").normalize("NFD").replace(/[\u0300-\u036f]/g,"");
 // Vendu en France : fiche marquée France et scannée en France (étiquette de popularité Open Facts « …-fr-scans-… »).
@@ -117,6 +117,10 @@ const FAM = [
   ["glaces","Alimentation","Glaces","food",["en:ice-creams"]],
   ["sodas","Alimentation","Sodas","food",["en:sodas"]],
   ["barres","Alimentation","Barres de céréales","food",["en:cereal-bars"]],
+  ["herbes-provence","Alimentation","Herbes de Provence","food",["en:provence-herbs","fr:herbes-de-provence","en:herbes-de-provence"]],
+  ["poivre","Alimentation","Poivre","food",["en:ground-black-pepper","en:black-peppers","en:peppers"]],
+  ["cannelle","Alimentation","Cannelle","food",["en:ground-cinnamon","en:cinnamon"]],
+  ["curry","Alimentation","Curry","food",["en:curry-powders","en:curry-powder","en:curries"]],
   ["douche","Cosmétiques","Gels douche","beauty",["en:shower-gels"]],
   ["savon","Cosmétiques","Savons","beauty",["en:soaps","en:bar-soaps"]],
   ["shampoing","Cosmétiques","Shampoings","beauty",["en:shampoos"]],

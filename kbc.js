@@ -212,15 +212,15 @@ const INGC = [
 // alts : [marque, produit, chemin de l'article LFT, partenariat déclaré (1) ou non (0)]
 const CFAM = [
   {id:"douche", t:"cosmetique", title:"Gel douche et savon", re:/shower|body.?wash|gel douche|douche|bath|bain|soap|savon/,
-   tips:["Préférer un savon saponifié à froid ou un gel lavant sans sulfates ni bétaïnes.","Un « vrai » savon de Marseille ne contient que de l'huile d'olive saponifiée, de l'eau et du sel."],
+   tips:["60 Millions (fin 2026) : les gels douche à reconstituer et les formes solides sont les mieux notés ; les gels liquides perdent des points pour les sulfates (le SLES, moins irritant que le SLS mais plus polluant), les parfums et les conservateurs.","60 Millions : les colorants de synthèse, inutiles, sont faciles à éviter.","Préférer un savon saponifié à froid ou un gel lavant sans sulfates ni bétaïnes.","Un « vrai » savon de Marseille ne contient que de l'huile d'olive saponifiée, de l'eau et du sel."],
    alts:[["Gaëlle Besse","Savon Tout doux pour tous","2019/07/25/les-savons-gaelle-besse/",1],["Veraēm","Gel lavant","2020/07/16/ma-routine-corps-clean/",1],["Réjence","Soin lavant apaisant","2020/07/16/ma-routine-corps-clean/",0],["Savon Arthur","Savon bébé à l'huile d'olive","2020/06/10/la-trousse-de-toilette-clean-pour-bebes-et-enfants/",1],["Senza","Savon liquide mains et corps","2020/06/10/la-trousse-de-toilette-clean-pour-bebes-et-enfants/",1],["Le Petit Marseillais","Gel douche fleur de bleuet bio","2024/10/30/analyse-compo-produit-corps/",0]],
    src:"2020/07/16/ma-routine-corps-clean/"},
   {id:"shampoing", t:"cosmetique", title:"Shampoing et après-shampoing", re:/shampo|conditioner|apres.?shampo|hair|cheveu|capillaire/,
-   tips:["Éviter sulfates, silicones et quats : la transition peut prendre quelques semaines.","Les produits capillaires « professionnels » sont souvent les moins clean selon elle."],
+   tips:["60 Millions (fin 2026) : les shampooings à reconstituer et solides sont tous notés A ; les liquides sont surtout pénalisés par les sulfates, les parfums et les composés éthoxylés (PEG), très polluants à fabriquer.","Éviter sulfates, silicones et quats : la transition peut prendre quelques semaines.","Les produits capillaires « professionnels » sont souvent les moins clean selon elle."],
    alts:[["Comme Avant","Shampoing solide (noisette, sésame)","2020/05/09/ma-routine-capillaire-clean/",1],["Lao","Shampoing purifiant","2020/05/09/ma-routine-capillaire-clean/",1],["Veraēm","Gel lavant","2020/05/09/ma-routine-capillaire-clean/",1],["Gorgée de Soleil","Shampoing douceur et brillance abricot","2024/10/11/analyse-compo-produit-shampoing/",0],["Savon Stories","Shampoing solide volume max","2024/10/11/analyse-compo-produit-shampoing/",0],["Propolia","Après-shampoing","2020/05/09/ma-routine-capillaire-clean/",0],["Centifolia","Lotion démêlante","2020/05/09/ma-routine-capillaire-clean/",0]],
    src:"2020/05/09/ma-routine-capillaire-clean/"},
   {id:"deo", t:"cosmetique", title:"Déodorant", re:/deodorant|deo\b|antiperspirant|anti.?transpirant/,
-   tips:["Elle déconseille les sels d'aluminium et la pierre d'alun.","Le bicarbonate peut irriter les peaux sensibles : préférer une version sans si c'est le cas."],
+   tips:["60 Millions (Cosméto'Score, fin 2026) : les déodorants crème ou baume, souvent bio, sont bien mieux notés que les sticks et billes ; les anti-transpirants sont pénalisés par les sels d'aluminium, irritants et suspectés d'être perturbateurs endocriniens.","60 Millions : les parfums, sensibilisants (limonène, linalol, citronellol, géraniol), font chuter la plupart des déodorants.","Elle déconseille les sels d'aluminium et la pierre d'alun.","Le bicarbonate peut irriter les peaux sensibles : préférer une version sans si c'est le cas."],
    alts:[["Gaëlle Besse","Déodorant crème nature (sans huile essentielle)","2021/06/05/routine-pour-enlever-les-odeurs-de-transpiration/",1],["Comme Avant","Déodorant solide","2020/07/16/ma-routine-corps-clean/",1],["Caudalie","Déodorant stick Vinofresh","2024/10/30/analyse-compo-produit-corps/",0],["Clémence et Vivien","Déodorant crème peau sensible","2024/10/30/analyse-compo-produit-corps/",0],["We Love The Planet","Déodorant","2024/10/30/analyse-compo-produit-corps/",0]],
    src:"2021/06/05/routine-pour-enlever-les-odeurs-de-transpiration/"},
   {id:"dentifrice", t:"cosmetique", title:"Dentifrice", re:/toothpaste|dentifrice|dental|bain de bouche|mouthwash/,
@@ -228,7 +228,7 @@ const CFAM = [
    alts:[["Comme Avant","Dentifrice à l'argile blanche avec fluor","2020/05/25/mes-routines-visage-clean/",1],["Comme Avant","Dentifrice enfant fraise ou pomme avec fluor","2020/06/10/la-trousse-de-toilette-clean-pour-bebes-et-enfants/",1],["Lilikiwi","Dentifrice enfant","2024/10/22/analyse-compo-produit-bebe/",0]],
    src:"2024/01/30/le-fluor-danger-ou-necessite/"},
   {id:"solaire", t:"cosmetique", title:"Crème solaire", re:/sun|solaire|spf|uv\b/,
-   tips:["Préférer les filtres minéraux (oxyde de zinc) non nano ; éviter les filtres chimiques controversés.","Ne pas réutiliser une crème solaire d'une année sur l'autre."],
+   tips:["60 Millions (fin 2026) : les huiles bronzantes, même avec filtre, ne sont pas recommandées ; les plus mal notées contiennent des filtres suspectés d'être perturbateurs endocriniens (octocrylène, homosalate), du BHT ou des huiles minérales.","60 Millions : pour les sticks à lèvres solaires, les listes courtes d'ingrédients sont les mieux notées.","Préférer les filtres minéraux (oxyde de zinc) non nano ; éviter les filtres chimiques controversés.","Ne pas réutiliser une crème solaire d'une année sur l'autre."],
    alts:[["Comme Avant","Crème solaire SPF 50 à l'huile de karanja","2021/05/25/quelle-creme-solaire-choisir/",1],["Acorelle","Crème solaire bébé SPF 50","2021/09/28/routine-trousse-de-vacances-dete-pour-toute-la-famille/",0],["Badger","Crème solaire SPF 50","2024/01/24/protection-solaire-en-hiver/",0],["Laboratoires de Biarritz","Crème solaire teintée","2019/11/06/lacne/",0]],
    src:"2021/05/25/quelle-creme-solaire-choisir/"},
   {id:"demaq", t:"cosmetique", title:"Démaquillant et nettoyant visage", re:/micellar|micellaire|make.?up remover|demaquill|cleans|nettoyant visage|cleansing/,
@@ -240,7 +240,7 @@ const CFAM = [
    alts:[["Veraēm","Crème hydratante","2021/04/15/routine-peau-normale/",1],["Réjence","Gel-crème hydratant","2021/04/15/routine-peau-normale/",0],["Clémence et Vivien","Sérum désaltérant à l'acide hyaluronique","2021/04/15/routine-peau-mixte/",0],["Les Pépites Beauté","Gel d'aloe vera","2021/04/15/routine-peau-normale/",0],["Altheys","Crème miraculeuse Zematopic","2024/11/05/analyse-compo-produit-visage/",0],["Cebio","Crème de jour hydratante","2024/11/05/analyse-compo-produit-visage/",0]],
    src:"2020/05/25/mes-routines-visage-clean/"},
   {id:"corps", t:"cosmetique", title:"Soin du corps et baume", re:/body lotion|body milk|lait corps|creme corps|baume|balm|butter|beurre|body cream/,
-   tips:["Un beurre ou une huile végétale brute suffit souvent : vérifier qu'il n'est ni raffiné ni hydrogéné.","Le karité contient du latex : test au poignet si allergie."],
+   tips:["60 Millions (fin 2026) : pour les huiles sèches, le bio n'est pas toujours un repère ; les allergènes parfumants (dont le benzyl salicylate, suspecté perturbateur endocrinien) pénalisent même des huiles labellisées.","Un beurre ou une huile végétale brute suffit souvent : vérifier qu'il n'est ni raffiné ni hydrogéné.","Le karité contient du latex : test au poignet si allergie."],
    alts:[["Veraēm","Beurre de karité brut bio","2025/07/10/le-beurre-de-karite/",1],["Egyptian Magic","Baume multi-usages","2020/07/16/ma-routine-corps-clean/",0],["Saint Hilaire","Huile de jojoba bio","2020/07/16/ma-routine-corps-clean/",0],["Badger","Beauty balm à la rose","2024/10/30/analyse-compo-produit-corps/",0]],
    src:"2020/07/16/ma-routine-corps-clean/"},
   {id:"bebe", t:"cosmetique", title:"Bébé et enfant", re:/baby|bebe|enfant|kid|child|change|liniment|lingette|wipe/,
@@ -342,6 +342,7 @@ const LFT_PRODUITS = [
 const LFT_PARTENAIRES = ["comme avant","savon arthur","senza","la fourche","gaelle besse","veraem","lao"];
 
 const JOURNAL_C = [
+  ["2026-11-25", "Conseils du test 60 Millions de 81 cosmétiques (déodorants, gels douche, shampooings, solaires, huiles) ajoutés aux familles de produits."],
   ["2026-11-25", "Ménager : eau de Javel reconnue, conseils et résultats du test 60 Millions de consommateurs de fin 2026 (labels, recettes maison, vinaigre)."],
   ["2026-11-18", "« Aroma » (arôme des dentifrices) n'est plus compté comme parfum : La Famille Tortue recommande des dentifrices qui en contiennent. Oxyde de zinc nano : « à limiter » et non plus « à éviter », comme dans son article sur les crèmes solaires."],
   ["2026-11-18", "Produits ménagers : les étiquettes en français réglementaire sont mieux lues (parfums, polycarboxylates, TAED, azurants optiques, phosphonates)."],

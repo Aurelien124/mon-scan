@@ -346,11 +346,11 @@ const KB = [
  lead:"Un bon beurre de cacahuète contient des cacahuètes, éventuellement un peu de sel. Les versions industrielles ajoutent huile de palme ou graisses hydrogénées (pour éviter la séparation), sucre et émulsifiants.",
  rank:[["100 % cacahuètes","L'huile remonte en surface : c'est normal, il suffit de mélanger."],["Cacahuètes et sel","Très bien aussi."]],
  last:["Avec huile de palme ou hydrogénée, sucre, émulsifiants","Texture stable mais recette dégradée."],
- pieges:["« Crunchy » ou « creamy » ne dit rien de la recette.","« Sans huile de palme » peut cacher une autre graisse ajoutée.","« Protéiné » : une purée 100 % cacahuètes l'est déjà (environ 25 %)."],
- gestes:["Très calorique : une cuillère à soupe suffit."],
+ pieges:["« Crunchy » ou « creamy » ne dit rien de la recette.","« Sans huile de palme » peut cacher une autre graisse ajoutée.","« Protéiné » : une purée 100 % cacahuètes l'est déjà (environ 25 %).","Prix : 10 à 14 € le kilo pour un 100 % cacahuètes. Les pots font 320, 340 ou 350 g : comparer au kilo (60 Millions).","Allergie à l'arachide : environ 1 % des Européens, surtout des enfants, parfois grave (60 Millions)."],
+ gestes:["Très calorique (environ 600 kcal pour 100 g, 10 % d'acides gras saturés) : 20 g par jour, soit trois cuillères à café, suffisent (60 Millions).","Se garde environ six mois après ouverture, au frais et au sec, plutôt hors du réfrigérateur pour rester souple (60 Millions)."],
  sig:[{t:"good",ing:/^(cacahuetes?|arachides?)( grillees?)?( \(?100 ?%\)?)?\.?$|100 ?% (de )?(cacahuetes?|arachides?)/,m:"100 % cacahuètes."},{t:"bad",ing:/huile de palme|hydrogene|graisse/,m:"Huile de palme ou graisse hydrogénée ajoutée."},{t:"warn",ing:/\bsucre\b|sirop|dextrose|melasse/,m:"Sucre ajouté."},
-      {t:"warn",ing:/e471|mono.? et diglycerides|emulsifiant/,m:"Émulsifiant."},{t:"warn",ing:/huile (de|d') (colza|tournesol|arachide|coton)/,m:"Huile ajoutée."},{t:"warn",nut:["salt_100g",">",1],m:"Salé (plus de 1 g pour 100 g)."}],
- sources:[["Repères généraux (lecture d'étiquette)","https://www.mangerbouger.fr"]]},
+      {t:"warn",ing:/e471|mono.? et diglycerides|emulsifiant/,m:"Émulsifiant."},{t:"warn",ing:/huile (de|d') (colza|tournesol|arachide|coton|sal)\b|beurre de (karite|cacao)/,m:"Huile ou graisse ajoutée."},{t:"warn",nut:["salt_100g",">",1],m:"Salé (plus de 1 g pour 100 g)."}],
+ sources:[["Repères généraux (lecture d'étiquette)","https://www.mangerbouger.fr"],["60 Millions de consommateurs, enquête « Faut-il suivre la mode du beurre de cacahuète ? » (magazine, exemplaire d'un abonné)","https://www.60millions-mag.com/"]]},
 
 {id:"sauces-tomate", g:"Épicerie", title:"Sauces tomate", sub:"Coulis, concentrés, basilic, bolognaise", verif:1,
  cats:["en:tomato-sauces","en:tomato-pastes","en:tomato-concentrates","en:double-tomato-concentrates","en:passata","en:tomato-coulis","en:bolognese-sauces","en:pasta-sauces","en:basil-sauces"],
@@ -418,6 +418,7 @@ const KB = [
 /* ================= JOURNAL DES MISES À JOUR =================
    Ajouter une ligne EN TÊTE à chaque mise à jour : ["AAAA-MM-JJ", "ce qui a changé, en une phrase"]. */
 const JOURNAL = [
+  ["2026-11-27", "Beurre de cacahuète : enquête 60 Millions (9 produits, conseils de consommation, prix, allergie) ; beurre de karité et de cacao repérés comme graisses ajoutées."],
   ["2026-11-27", "Pâtes à tartiner : test 60 Millions de 15 produits ajouté aux résultats par produit."],
   ["2026-11-27", "Saumon : test 60 Millions de 15 pavés (résultats par produit) et conseils d'achat du saumon fumé ajoutés aux fiches."],
   ["2026-11-27", "Hors-série 60 Millions (suite) : 133 produits de goûter et pour bébé notés selon leurs marqueurs d'ultratransformation, et 2 pièges ajoutés."],
@@ -992,4 +993,12 @@ const TESTS = [
   {m:/jardin bio/, w:[/tartiner/], d:0, t:"Test 60 Millions de consommateurs : 13e sur 15 pâtes à tartiner, 10/20.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
   {m:/poulain/, w:[/tartiner/], d:0, t:"Test 60 Millions de consommateurs : 13e sur 15 pâtes à tartiner, 10/20.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
   {m:/ovomaltine/, w:[/crunchy|tartiner/], d:-5, t:"Test 60 Millions de consommateurs : 15e sur 15 pâtes à tartiner, 7,4/20. 24 ingrédients marqueurs d'ultratransformation.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/andros/, w:[/be nuts|cacahuete/], d:-5, t:"Enquête 60 Millions de consommateurs sur 9 beurres de cacahuète : sucre, beurre de cacao, huile de tournesol et émulsifiant ajoutés ; recette à éviter selon le magazine.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/carrefour/, w:[/peanut butter|beurre de cacahuete/], d:-5, t:"Enquête 60 Millions de consommateurs sur 9 beurres de cacahuète : beurre de karité, sucre et sel ajoutés ; recette à éviter selon le magazine.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/ethiquable/, w:[/cacahuete/], d:5, t:"Enquête 60 Millions de consommateurs sur 9 beurres de cacahuète : 100 % cacahuètes, la recette conseillée.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/jardin bio/, w:[/cacahuete/], d:5, t:"Enquête 60 Millions de consommateurs sur 9 beurres de cacahuète : 100 % cacahuètes, la recette conseillée.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/menguy/, w:[/100/], no:/crunchy/, d:5, t:"Enquête 60 Millions de consommateurs sur 9 beurres de cacahuète : 100 % cacahuètes, la recette conseillée.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/menguy/, w:[/crunchy/], no:/100/, d:-5, t:"Enquête 60 Millions de consommateurs sur 9 beurres de cacahuète : graisses végétales (sal, cacao), sucre et sel ajoutés ; recette à éviter selon le magazine.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/monoprix/, w:[/cacahuete/], d:-5, t:"Enquête 60 Millions de consommateurs sur 9 beurres de cacahuète : sucre (jus de canne, 5 %) et sel ajoutés ; recette à éviter selon le magazine.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/whole earth/, w:[/cacahuete|peanut/], d:0, t:"Enquête 60 Millions de consommateurs sur 9 beurres de cacahuète : 99 % cacahuètes et sel.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
 ];

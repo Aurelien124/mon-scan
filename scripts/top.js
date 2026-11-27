@@ -63,6 +63,8 @@ const inFrance = p => (p.countries_tags||[]).includes("en:france") && (p.popular
 // Note affichée en tête de la famille dans l'onglet Top 10.
 // Familles où un critère de la fiche passe avant la note : produits avec cet indice favorable (clé k de kb.js) placés en tête.
 const PRIO = {miel:"chauffe"};
+// Recherches en plus pour ces familles : produits rares parmi les plus scannés (étiquettes Open Food Facts, puis texte).
+const EXTRA = {miel:{labels:["en:unpasteurized","fr:non-pasteurise","en:raw","fr:miel-cru","fr:extrait-a-froid"], terms:["miel non pasteurise","miel cru","miel extrait a froid","raw honey"]}};
 const NOTE = {miel:"Les miels non pasteurisés (ou crus, extraits à froid) passent en tête, puis le classement suit la note. Tous les miels ont un Nutri-Score E : la note sert surtout à les départager.", douche:"Selon La Famille Tortue, presque tous les gels douche du commerce contiennent un ingrédient qu'elle évite (bétaïnes, sulfates, parfum) : d'où des notes plafonnées à 49. Elle conseille plutôt un savon saponifié à froid : voir la famille « Savons »."};
 
 /* ---------- Familles ---------- */
@@ -154,8 +156,9 @@ const UA = "MonScan/1.0 (https://github.com/Aurelien124/mon-scan)";
 const ORGANIC = ["en:organic","en:eu-organic","fr:ab-agriculture-biologique"];
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
 
-async function search(base, tag, food, brand){
-  const url = BASE[base]+"/api/v2/search?"+(brand?"brands_tags="+encodeURIComponent(brand)+"&page_size=100":"categories_tags="+encodeURIComponent(tag)+"&countries_tags=en:france&page_size=100")+"&sort_by=unique_scans_n&fields="+(food?FFIELDS:CFIELDS);
+async function search(base, tag, food, brand, extra){
+  const url = extra ? BASE[base]+(extra.label?"/api/v2/search?categories_tags="+encodeURIComponent(tag)+"&labels_tags="+encodeURIComponent(extra.label)+"&page_size=100&sort_by=unique_scans_n&fields=":"/cgi/search.pl?search_simple=1&json=1&action=process&page_size=100&search_terms="+encodeURIComponent(extra.terms)+"&fields=")+(food?FFIELDS:CFIELDS)
+    : BASE[base]+"/api/v2/search?"+(brand?"brands_tags="+encodeURIComponent(brand)+"&page_size=100":"categories_tags="+encodeURIComponent(tag)+"&countries_tags=en:france&page_size=100")+"&sort_by=unique_scans_n&fields="+(food?FFIELDS:CFIELDS);
   for(let i=0;i<4;i++){
     try{
       const r = await fetch(url, {headers:{"User-Agent":UA}, signal:AbortSignal.timeout(60000)});
@@ -192,6 +195,16 @@ async function search(base, tag, food, brand){
       keepIdx(id);
       continue;
     }
+    if(EXTRA[id]){
+      const known = new Set(prods.map(x=>x.code)); let add = 0;
+      const qs = [...EXTRA[id].labels.map(label=>({label})), ...EXTRA[id].terms.map(terms=>({terms}))];
+      for(const q of qs){
+        const r = await search(base, used, food, null, q); await sleep(7000);
+        for(const x of (r||[])) if(!known.has(x.code) && (x.categories_tags||[]).includes(used)){ x._extra = 1; known.add(x.code); prods.push(x); add++; }
+        console.log("   + recherche", q.label||q.terms, r?r.length+" produits":"échec");
+      }
+      console.log("   +", add, "produits ajoutés par les recherches en plus");
+    }
     if(!food){
       const cf = CFAM.find(c=>c.id===CMAP[id]);
       const brands = [...new Set([...(cf?cf.alts.map(a=>a[0]):[]), ...(PLUS[id]||[]), ...(base==="beauty"?PLUS_COSMETO:[])].map(slug))];
@@ -213,7 +226,7 @@ async function search(base, tag, food, brand){
     for(const p of prods){
       const name = String(p.product_name_fr || p.product_name || "").replace(/\\(.)/g,"$1").trim();
       if(!p.code || !name || seen.has(p.code)) continue;
-      if(strict && !p._followed && !inFrance(p)){ outFr++; continue; }
+      if(strict && !p._followed && !(p._extra && (p.countries_tags||[]).includes("en:france")) && !inFrance(p)){ outFr++; continue; }
       const txt = nrm(name+" "+(p.generic_name_fr||""));
       if(!food && wrongFamily(id, txt)){ outName++; continue; }
       if(food && MUST[id] && !MUST[id].test(txt)){ outName++; continue; }

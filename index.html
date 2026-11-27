@@ -453,6 +453,10 @@ function testsFor(p){
   if(!brand || !name) return [];
   return TESTS.filter(t => (!t.exp || t.exp >= now) && t.m.test(brand) && t.w.every(r=>r.test(name)) && !(t.no && t.no.test(name)));
 }
+function testsDelta(tests){
+  const ds = (tests||[]).filter(t=>t.d!=null).map(t=>t.d);
+  return ds.length ? Math.round(ds.reduce((s,x)=>s+x,0)/ds.length) : 0;
+}
 function analyse(p, w){
   const adds = [...new Set((p.additives_tags||[]).map(normAdd).filter(Boolean))].map(c=>{
     const k = ADD[c]; return {code:c, level:k?k[0]:1, name:k?k[1]:"Non classé dans ma grille", known:!!k};
@@ -478,7 +482,8 @@ function analyse(p, w){
   // Résultats de tests sur ce produit précis (kb.js, TESTS) : bonus ou malus, puis plafond si défaut grave.
   const tests = testsFor(p), before = score;
   if(score!=null){
-    for(const t of tests) if(t.d) score = Math.max(0, Math.min(100, score + t.d));
+    // Plusieurs tests sur le même produit : la moyenne de leurs effets, pas la somme.
+    score = Math.max(0, Math.min(100, score + testsDelta(tests)));
     for(const t of tests) if(t.cap!=null && score>t.cap) score = t.cap;
   }
   return {score, parts, adds, organic, nova:T!=null?nova:null, grade:g in N_PTS?g:null, missing, capped, tests, testDelta: score!=null&&before!=null ? score-before : 0,
@@ -496,7 +501,8 @@ function verdict(s){
 function safeImg(u){ try{const x=new URL(u); return x.protocol==="https:" && /(^|\.)open(food|beauty|products|petfood)facts\.org$/.test(x.hostname) ? x.href : null}catch(e){return null} }
 function fmt(v,unit){ return v==null||v===""||isNaN(Number(v)) ? "–" : (Math.round(Number(v)*10)/10).toString().replace(".",",")+" "+unit; }
 function testAlerts(tests){
-  return (tests||[]).map(t=>`<div class="alert ${t.cap!=null?"red":t.d>0?"green":""}">${esc(t.t)} <span class="small">${t.cap!=null?`Note plafonnée à ${t.cap}${t.d?`, et ${t.d>0?"+":""}${t.d} points`:""}.`:t.d?`Note ${t.d>0?"+":""}${t.d}.`:"Sans effet sur la note."} <a href="${esc(t.url)}" target="_blank" rel="noopener">Source</a>${t.url2?` · <a href="${esc(t.url2)}" target="_blank" rel="noopener">Source 2</a>`:""}</span></div>`).join("");
+  const many = (tests||[]).filter(t=>t.d!=null).length>1, avg = testsDelta(tests);
+  return (many?`<p class="small muted">Produit testé plusieurs fois : la note retient la moyenne des résultats (${avg>0?"+":""}${avg} points).</p>`:"")+ (tests||[]).map(t=>`<div class="alert ${t.cap!=null?"red":t.d>0?"green":""}">${esc(t.t)} <span class="small">${t.cap!=null?`Note plafonnée à ${t.cap}${t.d?`, et ${t.d>0?"+":""}${t.d} points`:""}.`:t.d?`Note ${t.d>0?"+":""}${t.d}.`:"Sans effet sur la note."} <a href="${esc(t.url)}" target="_blank" rel="noopener">Source</a>${t.url2?` · <a href="${esc(t.url2)}" target="_blank" rel="noopener">Source 2</a>`:""}</span></div>`).join("");
 }
 function rhead(p, score, vt, vc, tag){
   const img = safeImg(p.image_front_small_url);

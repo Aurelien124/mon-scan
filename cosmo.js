@@ -104,7 +104,7 @@ function analyseCosmetic(p, opts){
   const lftHits = o.lft ? hits.filter(h=>h.g.lft && h.g.lft[0]>0).sort((a,b)=>b.g.lft[0]-a.g.lft[0]||a.first-b.first) : [];
   const lftOk = o.lft ? hits.filter(h=>h.g.lft && h.g.lft[0]<0) : [];
   let score = null;
-  const tests = testsForC(p), tD = tests.reduce((t,x)=>t+(x.d||0),0);
+  const tests = testsForC(p), tDs = tests.filter(x=>x.d!=null).map(x=>x.d), tD = tDs.length ? Math.round(tDs.reduce((s,x)=>s+x,0)/tDs.length) : 0;   // plusieurs tests : moyenne
   const nEvite = lftHits.filter(h=>h.g.lft[0]===2).length;
   if(toks.length){
     score = 100;

@@ -412,12 +412,25 @@ const KB = [
  gestes:["Une compote ne remplace pas un fruit entier : moins de fibres intactes."],
  sig:[{t:"good",re:/sans sucres? ajoutes?|puree de (fruits?|pommes?|poires?)/,m:"Sans sucres ajoutés."},{t:"warn",ing:/\bsucre\b|sirop de glucose|fructose/,m:"Sucre ajouté."},{t:"warn",re:/desserts? de fruits|specialites? de fruits/,m:"Dessert ou spécialité de fruits : recette moins riche en fruit."},
       {t:"warn",ing:/concentre/,m:"Jus concentré : sucre déguisé."},{t:"warn",ing:/arome|amidon|epaississant|pectine/,m:"Arôme ou épaississant."},{t:"warn",nut:["sugars_100g",">",15],m:"Plus de 15 g de sucres pour 100 g."},{t:"good",re:BIO,m:"Bio."}],
- sources:[["Repères PNNS (fruits et produits sucrés), mangerbouger.fr","https://www.mangerbouger.fr"],["60 Millions de consommateurs, hors-série n° 150S (nov.-déc. 2026) : produits ultratransformés","https://www.60millions-mag.com/"]]}
+ sources:[["Repères PNNS (fruits et produits sucrés), mangerbouger.fr","https://www.mangerbouger.fr"],["60 Millions de consommateurs, hors-série n° 150S (nov.-déc. 2026) : produits ultratransformés","https://www.60millions-mag.com/"]]},
+
+{id:"glaces", g:"Épicerie", title:"Glaces et sorbets", sub:"Sorbet plein fruit, crème glacée, cônes et bâtonnets", verif:1,
+ cats:["en:ice-creams-and-sorbets","en:ice-creams","en:sorbets","en:frozen-desserts","en:ice-cream-cones","en:ice-cream-bars","en:ice-cream-sticks","en:ice-lollies","en:water-ices","en:ice-cream-tubs"],
+ kw:/^(sorbets?|cremes? glacees?|glaces? (a l'eau|au|aux|a la|vanille|chocolat|fraise|italienne)|cones? (glaces?|vanille|chocolat|fraise|fruits)|cornets?|batonnets? glaces?|ice cream|gelato|esquimaux?)/,
+ lead:"Au test de 60 Millions de consommateurs (70 glaces), les bâtonnets sorbet plein fruit sont les mieux notés : 3 ou 4 ingrédients, peu ou pas d'additifs. Cônes, bâtonnets vanille et confiseries glacées dépassent souvent 20 ingrédients et obtiennent presque tous moins de 10/20.",
+ rank:[["Sorbet plein fruit","Dénomination réglementée : au moins 45 % de fruits (20 % pour les fruits acides ou à saveur forte) et 650 g par litre (DGCCRF)."],["Sorbet ou glace à l'eau simple","Fruits, sucre, peu d'ingrédients : à vérifier sur la liste."],["Crème glacée","Matières grasses laitières seulement : plus calorique, mais une vraie recette de base."]],
+ last:["Cônes et confiseries glacées","Plus de 20 ingrédients, plusieurs sucres (sirop de glucose, sucre inverti), émulsifiants, graisses de coprah ou de coco riches en acides gras saturés."],
+ pieges:["« Glace » n'est pas « crème glacée » : la glace peut contenir des matières grasses végétales, la crème glacée seulement des matières grasses laitières (DGCCRF).","Un cône apporte 12 à 20 g de sucres, soit un quart à près de la moitié du repère de 50 g par jour (60 Millions).","Les bâtonnets aux couleurs vives peuvent ne contenir aucun fruit ; regarder le pourcentage de fruits.","Émulsifiants E471 et carraghénanes (E407) : une étude de la cohorte NutriNet-Santé (Inserm, 2024) les associe à un risque accru de cancers ; résultat à confirmer, débattu. Ils sont absents des sorbets du test.","Les glaces contiennent de l'air : comparer le prix au kilo, pas au litre ni à la boîte."],
+ gestes:["À garder comme petit plaisir : un bâtonnet sorbet de temps en temps plutôt qu'un cône ou une confiserie glacée.","Ne jamais recongeler une glace décongelée ; la consommer vite après l'achat (DGCCRF)."],
+ sig:[{t:"good",re:/sorbet plein fruit|plein fruit/,m:"Sorbet plein fruit : au moins 45 % de fruits."},{t:"warn",ing:/e471|mono.? et diglycerides/,m:"Émulsifiant E471."},{t:"warn",ing:/carraghenane|e407/,m:"Carraghénanes (E407)."},
+      {t:"warn",ing:/coprah|huile de coco|graisse de coco|huile de palme|palmiste/,m:"Graisse végétale riche en acides gras saturés."},{t:"warn",ing:/sirop de glucose|sucre inverti|dextrose/,m:"Plusieurs sucres ajoutés."},{t:"warn",nut:["sugars_100g",">",25],m:"Plus de 25 g de sucres pour 100 g."}],
+ sources:[["DGCCRF, Glaces, sorbets et crèmes glacées : comment les choisir ?","https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/glaces-sorbets-et-cremes-glacees-comment-les-choisir"],["60 Millions de consommateurs, test de 70 glaces et sorbets (magazine, exemplaire d'un abonné)","https://www.60millions-mag.com/"],["Inserm, émulsifiants et risque de cancers (cohorte NutriNet-Santé, 2024)","https://presse.inserm.fr/en/la-consommation-de-certains-additifs-alimentaires-emulsifiants-serait-associee-a-un-risque-accru-de-cancers/68077/"]]}
 ];
 
 /* ================= JOURNAL DES MISES À JOUR =================
    Ajouter une ligne EN TÊTE à chaque mise à jour : ["AAAA-MM-JJ", "ce qui a changé, en une phrase"]. */
 const JOURNAL = [
+  ["2026-11-27", "Nouvelle fiche glaces et sorbets (vérifiée : DGCCRF, test 60 Millions de 70 glaces, étude Inserm sur les émulsifiants signalée comme débattue)."],
   ["2026-11-27", "Glaces : test 60 Millions de 70 glaces et sorbets (bâtonnets, cônes, confiseries) ajouté aux résultats par produit."],
   ["2026-11-27", "Tests 60 Millions : 22 lessives liquides et en capsules, 20 crèmes hydratantes et gels douche, 30 produits de maquillage (72 résultats par produit)."],
   ["2026-11-27", "Beurre de cacahuète : enquête 60 Millions (9 produits, conseils de consommation, prix, allergie) ; beurre de karité et de cacao repérés comme graisses ajoutées."],

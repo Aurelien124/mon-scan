@@ -53,7 +53,7 @@ const MUST = {
   oeufs:/oeuf|egg/, riz:/\briz\b|rice|basmati|risotto/, chips:/chip/, beurre:/beurre|butter/, brioches:/brioch|gache/,
   "jus-orange":/jus|juice|nectar|orange/, "jus-pomme":/jus|juice|pomme|apple/,
   "fromage-blanc":/fromage blanc|faisselle|fromages? frais|skyr|quark|fromage battu/,
-  "huile-olive":/olive/, "foie-gras":/foie gras/, "herbes-provence":/provence/, poivre:/poivre|pepper/, cannelle:/cannelle|cinnamon/, curry:/curry|cari/, "sauce-tomate":/tomat|bolognaise|arrabbiata|basilic|napolitaine|sugo|passata|provencal/
+  "huile-olive":/olive/, "foie-gras":/foie gras/, coulis:/coulis|passata|tomate/, "concentre-tomate":/concentre/, bolognaise:/bolo/, "herbes-provence":/provence/, poivre:/poivre|pepper/, cannelle:/cannelle|cinnamon/, curry:/curry|cari/, "sauce-tomate":/tomat|bolognaise|arrabbiata|basilic|napolitaine|sugo|passata|provencal/
 };
 // Familles où le Nutri-Score ne s'applique pas : classées sur les additifs, le bio et les résultats de tests.
 const NO_NS = new Set(["herbes-provence","poivre","cannelle","curry"]);
@@ -93,6 +93,9 @@ const FAM = [
   ["huile-olive","Alimentation","Huile d'olive","food",["en:extra-virgin-olive-oils"]],
   ["ketchup","Alimentation","Ketchup","food",["en:ketchup"]],
   ["sauce-tomate","Alimentation","Sauces tomate","food",["en:tomato-sauces"]],
+  ["coulis","Alimentation","Coulis et passata","food",["en:passata","en:tomato-coulis","en:crushed-tomatoes"]],
+  ["concentre-tomate","Alimentation","Concentré de tomate","food",["en:tomato-pastes","en:tomato-concentrates"]],
+  ["bolognaise","Alimentation","Sauces bolognaises","food",["en:bolognese-sauces"]],
   ["mayonnaise","Alimentation","Mayonnaise","food",["en:mayonnaises"]],
   ["pesto","Alimentation","Pesto","food",["en:pestos","en:pesto"]],
   ["moutarde","Alimentation","Moutarde","food",["en:mustards"]],

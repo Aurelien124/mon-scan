@@ -264,7 +264,7 @@ const CFAM = [
    alts:[["Comme Avant","Lessive en poudre au bicarbonate sans parfum","2021/04/23/les-lessives-ecologiques/",1],["Savon Arthur","Lessive liquide bébé sans parfum","2021/04/23/les-lessives-ecologiques/",1],["Senza","Lessive bio sans parfum","2021/04/23/les-lessives-ecologiques/",1]],
    src:"2021/04/23/les-lessives-ecologiques/"},
   {id:"vaisselle", t:"menager", title:"Lave-vaisselle et vaisselle", re:/dishwash|lave.?vaisselle|vaisselle|dish/,
-   tips:["Presque toutes les tablettes contiennent des ingrédients qu'elle évite (TAED, PEG, éthoxylés, polycarboxylates, enzymes OGM, parfum).","Le vinaigre blanc 14° sert de liquide de rinçage."],
+   tips:["Presque toutes les tablettes contiennent des ingrédients qu'elle évite (TAED, PEG, éthoxylés, polycarboxylates, enzymes OGM, parfum).","Le vinaigre blanc 14° sert de liquide de rinçage.","Que Choisir (juin 2026) : les capsules attirent les jeunes enfants, aucune ne contient d'agent amérisant qui les ferait recracher, et elles libèrent vite leur contenu au contact de la salive. Avec des enfants, préférer les tablettes.","Que Choisir (juin 2026) : les tablettes écolabellisées ont de bonnes notes d'environnement mais une efficacité inégale ; les capsules de grandes marques lavent mieux mais polluent davantage."],
    alts:[["Comme Avant","Poudre lave-vaisselle au sel de Camargue","2026/03/06/comparatif-produits-lave-vaisselle/",1],["Sonett","Pastilles lave-vaisselle","2026/03/06/comparatif-produits-lave-vaisselle/",0]],
    src:"2026/03/06/comparatif-produits-lave-vaisselle/"},
   {id:"nettoyant", t:"menager", title:"Nettoyant ménager", re:/clean|nettoy|menage|household|multi.?usage|multi.?purpose|wc|toilet|vitre|sol|degraiss|desinfect|anticalcaire|javel/,
@@ -342,6 +342,7 @@ const LFT_PRODUITS = [
 const LFT_PARTENAIRES = ["comme avant","savon arthur","senza","la fourche","gaelle besse","veraem","lao"];
 
 const JOURNAL_C = [
+  ["2026-11-27", "Lave-vaisselle : deux conseils tirés du test Que Choisir de juin 2026 (sécurité des capsules, écolabels)."],
   ["2026-11-25", "Conseils du test 60 Millions de 81 cosmétiques (déodorants, gels douche, shampooings, solaires, huiles) ajoutés aux familles de produits."],
   ["2026-11-25", "Ménager : eau de Javel reconnue, conseils et résultats du test 60 Millions de consommateurs récent (labels, recettes maison, vinaigre)."],
   ["2026-11-18", "« Aroma » (arôme des dentifrices) n'est plus compté comme parfum : La Famille Tortue recommande des dentifrices qui en contiennent. Oxyde de zinc nano : « à limiter » et non plus « à éviter », comme dans son article sur les crèmes solaires."],

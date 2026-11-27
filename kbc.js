@@ -260,7 +260,7 @@ const CFAM = [
    alts:[["Khadi","Teinture végétale","2019/07/15/les-teintures-vegetales/",0]],
    src:"2019/07/15/les-teintures-vegetales/"},
   {id:"lessive", t:"menager", title:"Lessive", re:/laundry|lessive|detergent|washing powder|lave.?linge|adoucissant|softener/,
-   tips:["Éviter parfums, huiles essentielles, sulfates et polycarboxylates ; la glycérine encrasse la machine.","Le vinaigre blanc remplace l'adoucissant."],
+   tips:["Éviter parfums, huiles essentielles, sulfates et polycarboxylates ; la glycérine encrasse la machine.","Le vinaigre blanc remplace l'adoucissant.","60 Millions : l'Ecolabel européen reste un repère plus fiable que le label privé Cleanright, attribué aussi à des lessives au Ménag'Score très mauvais.","60 Millions : toutes les lessives généralistes sont parfumées ; pour éviter les parfums allergisants, regarder les lessives « peaux sensibles ».","60 Millions : comparer le coût par lavage, pas le prix au litre. Les capsules coûtent en moyenne deux fois plus cher par lavage que les liquides."],
    alts:[["Comme Avant","Lessive en poudre au bicarbonate sans parfum","2021/04/23/les-lessives-ecologiques/",1],["Savon Arthur","Lessive liquide bébé sans parfum","2021/04/23/les-lessives-ecologiques/",1],["Senza","Lessive bio sans parfum","2021/04/23/les-lessives-ecologiques/",1]],
    src:"2021/04/23/les-lessives-ecologiques/"},
   {id:"vaisselle", t:"menager", title:"Lave-vaisselle et vaisselle", re:/dishwash|lave.?vaisselle|vaisselle|dish/,
@@ -342,6 +342,7 @@ const LFT_PRODUITS = [
 const LFT_PARTENAIRES = ["comme avant","savon arthur","senza","la fourche","gaelle besse","veraem","lao"];
 
 const JOURNAL_C = [
+  ["2026-11-27", "Lessive : trois conseils tirés du test 60 Millions de 24 lessives (Ecolabel et Cleanright, parfums, coût par lavage)."],
   ["2026-11-27", "Lave-vaisselle : deux conseils tirés du test Que Choisir de juin 2026 (sécurité des capsules, écolabels)."],
   ["2026-11-25", "Conseils du test 60 Millions de 81 cosmétiques (déodorants, gels douche, shampooings, solaires, huiles) ajoutés aux familles de produits."],
   ["2026-11-25", "Ménager : eau de Javel reconnue, conseils et résultats du test 60 Millions de consommateurs récent (labels, recettes maison, vinaigre)."],

@@ -418,6 +418,7 @@ const KB = [
 /* ================= JOURNAL DES MISES À JOUR =================
    Ajouter une ligne EN TÊTE à chaque mise à jour : ["AAAA-MM-JJ", "ce qui a changé, en une phrase"]. */
 const JOURNAL = [
+  ["2026-11-27", "Pâtes à tartiner : test 60 Millions de 15 produits ajouté aux résultats par produit."],
   ["2026-11-27", "Saumon : test 60 Millions de 15 pavés (résultats par produit) et conseils d'achat du saumon fumé ajoutés aux fiches."],
   ["2026-11-27", "Hors-série 60 Millions (suite) : 133 produits de goûter et pour bébé notés selon leurs marqueurs d'ultratransformation, et 2 pièges ajoutés."],
   ["2026-11-27", "Hors-série 60 Millions sur l'ultratransformation (nov.-déc. 2026) : 101 produits notés (skyrs, pâtes brisées, bouillons, rillettes de poisson, chips, hachés, céréales, pain de mie, mousses, boissons, bonbons) et 5 pièges ajoutés."],
@@ -976,4 +977,19 @@ const TESTS = [
   {m:/picard/, w:[/pave/,/saumon/,/atlantique/], no:/fume/, d:5, t:"Test 60 Millions de consommateurs : 13e sur 15 pavés de saumon (frais ou surgelés), 13,5/20.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
   {m:/monoprix/, w:[/pave/,/saumon/], no:/fume/, d:0, t:"Test 60 Millions de consommateurs : 14e sur 15 pavés de saumon (frais ou surgelés), 12,6/20. Mercure noté très insuffisant.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
   {m:/intermarche/, w:[/pave/,/saumon/,/bio/], no:/fume/, d:0, t:"Test 60 Millions de consommateurs : 14e sur 15 pavés de saumon (frais ou surgelés), 12,6/20.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/lindt/, w:[/tartiner/], d:5, t:"Test 60 Millions de consommateurs : 1re sur 15 pâtes à tartiner, 13,1/20.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/georgelin/, w:[/tartiner/], d:0, t:"Test 60 Millions de consommateurs : 2e sur 15 pâtes à tartiner, 12,6/20.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/funkie/, w:[/tartiner|cacao/], d:0, t:"Test 60 Millions de consommateurs : 3e sur 15 pâtes à tartiner, 12,5/20. Nutri-Score affiché B, recalculé D ; dégustation jugée insuffisante.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/bonne maman/, w:[/tartiner/], d:0, t:"Test 60 Millions de consommateurs : 3e sur 15 pâtes à tartiner, 12,5/20.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/rigoni/, w:[/nocciolata/], no:/bianca|blanc|sans lait|dairy/, d:0, t:"Test 60 Millions de consommateurs : 5e sur 15 pâtes à tartiner, 12,4/20.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/nussa/, w:[/tartiner|cacao/], d:0, t:"Test 60 Millions de consommateurs : 6e sur 15 pâtes à tartiner, 12,1/20.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/ivoria/, w:[/tartiner/], d:0, t:"Test 60 Millions de consommateurs : 7e sur 15 pâtes à tartiner, 11,7/20. Nutri-Score affiché D, recalculé E.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/nutella|ferrero/, w:[/nutella|tartiner/], no:/biscuit|b.?ready|\bgo\b/, d:0, t:"Test 60 Millions de consommateurs : 8e sur 15 pâtes à tartiner, 11,4/20. Huile de palme certifiée.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/ducasse/, w:[/tartiner|praline/], d:0, t:"Test 60 Millions de consommateurs : 9e sur 15 pâtes à tartiner, 11/20. Dégustation jugée insuffisante.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/herme/, w:[/tartiner|praline/], d:0, t:"Test 60 Millions de consommateurs : 9e sur 15 pâtes à tartiner, 11/20.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/bio village|marque repere/, w:[/tartiner/,/noisette/], d:0, t:"Test 60 Millions de consommateurs : 11e sur 15 pâtes à tartiner, 10,8/20. Nutri-Score affiché D, recalculé E.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/carrefour/, w:[/kaonuts/], d:0, t:"Test 60 Millions de consommateurs : 12e sur 15 pâtes à tartiner, 10,3/20. Contient de l'huile de palme.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/jardin bio/, w:[/tartiner/], d:0, t:"Test 60 Millions de consommateurs : 13e sur 15 pâtes à tartiner, 10/20.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/poulain/, w:[/tartiner/], d:0, t:"Test 60 Millions de consommateurs : 13e sur 15 pâtes à tartiner, 10/20.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
+  {m:/ovomaltine/, w:[/crunchy|tartiner/], d:-5, t:"Test 60 Millions de consommateurs : 15e sur 15 pâtes à tartiner, 7,4/20. 24 ingrédients marqueurs d'ultratransformation.", src:"60 Millions", url:"https://www.60millions-mag.com/", date:"2026", exp:"2029-12"},
 ];

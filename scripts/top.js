@@ -63,9 +63,11 @@ const inFrance = p => (p.countries_tags||[]).includes("en:france") && (p.popular
 // Note affichée en tête de la famille dans l'onglet Top 10.
 // Familles où un critère de la fiche passe avant la note : produits avec cet indice favorable (clé k de kb.js) placés en tête.
 const PRIO = {miel:"chauffe"};
+// Meilleur Nutri-Score possible pour la famille : au-dessus, les valeurs saisies dans Open Food Facts sont fausses (un miel, c'est 80 % de sucres : D ou E).
+const NS_MAX = {miel:"d"};
 // Recherches en plus pour ces familles : produits rares parmi les plus scannés (étiquettes Open Food Facts, puis texte).
 const EXTRA = {miel:{labels:["en:unpasteurized","fr:non-pasteurise","en:raw","fr:miel-cru","fr:extrait-a-froid"], terms:["miel non pasteurise","miel cru","miel extrait a froid","raw honey"]}};
-const NOTE = {miel:"Les miels non pasteurisés (ou crus, extraits à froid) passent en tête, puis le classement suit la note. Tous les miels ont un Nutri-Score E : la note sert surtout à les départager.", douche:"Selon La Famille Tortue, presque tous les gels douche du commerce contiennent un ingrédient qu'elle évite (bétaïnes, sulfates, parfum) : d'où des notes plafonnées à 49. Elle conseille plutôt un savon saponifié à froid : voir la famille « Savons »."};
+const NOTE = {miel:"Les miels non pasteurisés (ou crus, extraits à froid) passent en tête, puis le classement suit la note. Un miel a un Nutri-Score D ou E (environ 80 % de sucres) ; ceux affichés en A, B ou C dans Open Food Facts ont des valeurs fausses et sont écartés.", douche:"Selon La Famille Tortue, presque tous les gels douche du commerce contiennent un ingrédient qu'elle évite (bétaïnes, sulfates, parfum) : d'où des notes plafonnées à 49. Elle conseille plutôt un savon saponifié à froid : voir la famille « Savons »."};
 
 /* ---------- Familles ---------- */
 // [id, groupe, titre, base (food|beauty|product), étiquettes de catégorie Open Facts]
@@ -234,6 +236,7 @@ async function search(base, tag, food, brand, extra){
       let k = 0;
       if(food){
         if(p.product_type && p.product_type!=="food") continue; // cosmétique ou produit ménager rangé par erreur dans la base aliments
+        if(NS_MAX[id] && String(p.nutriscore_grade||"") < NS_MAX[id]){ console.log("   Nutri-Score incohérent écarté :", p.code, p.product_name, p.nutriscore_grade); continue; }
         if(!NO_NS.has(id) && !/^[a-e]$/.test(String(p.nutriscore_grade||""))) continue; // note complète seulement (sauf épices, sans Nutri-Score)
         const r = analyse(p, W); s = r.score; k = r.adds.length;
         var fk = famBonus(p, r.adds.map(x=>x.code));

@@ -53,7 +53,7 @@ const MUST = {
   oeufs:/oeuf|egg/, riz:/\briz\b|rice|basmati|risotto/, chips:/chip/, beurre:/beurre|butter/, brioches:/brioch|gache/,
   "jus-orange":/jus|juice|nectar|orange/, "jus-pomme":/jus|juice|pomme|apple/,
   "fromage-blanc":/fromage blanc|faisselle|fromages? frais|skyr|quark|fromage battu/,
-  "huile-olive":/olive/, "foie-gras":/foie gras/, coulis:/coulis|passata|tomate/, "concentre-tomate":/concentre/, bolognaise:/bolo/, "herbes-provence":/provence/, poivre:/poivre|pepper/, cannelle:/cannelle|cinnamon/, curry:/curry|cari/, "sauce-tomate":/tomat|bolognaise|arrabbiata|basilic|napolitaine|sugo|passata|provencal/
+  "huile-olive":/olive/, miel:/miel|honey/, "foie-gras":/foie gras/, coulis:/coulis|passata|tomate/, "concentre-tomate":/concentre/, bolognaise:/bolo/, "herbes-provence":/provence/, poivre:/poivre|pepper/, cannelle:/cannelle|cinnamon/, curry:/curry|cari/, "sauce-tomate":/tomat|bolognaise|arrabbiata|basilic|napolitaine|sugo|passata|provencal/
 };
 // Familles où le Nutri-Score ne s'applique pas : classées sur les additifs, le bio et les résultats de tests.
 const NO_NS = new Set(["herbes-provence","poivre","cannelle","curry"]);
@@ -61,7 +61,9 @@ const nrm = x => String(x||"").toLowerCase().replace(/œ/g,"oe").replace(/æ/g,"
 // Vendu en France : fiche marquée France et scannée en France (étiquette de popularité Open Facts « …-fr-scans-… »).
 const inFrance = p => (p.countries_tags||[]).includes("en:france") && (p.popularity_tags||[]).some(t=>/-fr-scans-/.test(t));
 // Note affichée en tête de la famille dans l'onglet Top 10.
-const NOTE = {douche:"Selon La Famille Tortue, presque tous les gels douche du commerce contiennent un ingrédient qu'elle évite (bétaïnes, sulfates, parfum) : d'où des notes plafonnées à 49. Elle conseille plutôt un savon saponifié à froid : voir la famille « Savons »."};
+// Familles où un critère de la fiche passe avant la note : produits avec cet indice favorable (clé k de kb.js) placés en tête.
+const PRIO = {miel:"chauffe"};
+const NOTE = {miel:"Les miels non pasteurisés (ou crus, extraits à froid) passent en tête, puis le classement suit la note. Tous les miels ont un Nutri-Score E : la note sert surtout à les départager.", douche:"Selon La Famille Tortue, presque tous les gels douche du commerce contiennent un ingrédient qu'elle évite (bétaïnes, sulfates, parfum) : d'où des notes plafonnées à 49. Elle conseille plutôt un savon saponifié à froid : voir la famille « Savons »."};
 
 /* ---------- Familles ---------- */
 // [id, groupe, titre, base (food|beauty|product), étiquettes de catégorie Open Facts]
@@ -79,6 +81,7 @@ const FAM = [
   ["pain-de-mie","Alimentation","Pain de mie","food",["en:sandwich-breads","fr:pains-de-mie"]],
   ["madeleines","Alimentation","Madeleines et gâteaux moelleux","food",["en:madeleines","en:sponge-cakes"]],
   ["confitures","Alimentation","Confitures","food",["en:jams","en:fruit-preserves"]],
+  ["miel","Alimentation","Miels","food",["en:honeys"]],
   ["compotes","Alimentation","Compotes","food",["en:compotes"]],
   ["jus-orange","Alimentation","Jus d'orange","food",["en:orange-juices"]],
   ["jus-fruits","Alimentation","Jus de fruits (tous)","food",["en:fruit-juices","en:juices-and-nectars"]],
@@ -221,7 +224,8 @@ async function search(base, tag, food, brand){
         if(!NO_NS.has(id) && !/^[a-e]$/.test(String(p.nutriscore_grade||""))) continue; // note complète seulement (sauf épices, sans Nutri-Score)
         const r = analyse(p, W); s = r.score; k = r.adds.length;
         var fk = famBonus(p, r.adds.map(x=>x.code));
-        it = {fk, c:p.code, n:name, b:p.brands||"", i:p.image_front_small_url||"", g:p.nutriscore_grade, nv:Number(p.nova_group)||0,
+        var fam = PRIO[id] && findFamily(p), pr = fam && familyCheck(p, fam, r.adds.map(x=>x.code)).hits.some(h=>h.t==="good" && h.k===PRIO[id]) ? 1 : 0;
+        it = {fk, ...(pr?{pr}:{}), c:p.code, n:name, b:p.brands||"", i:p.image_front_small_url||"", g:p.nutriscore_grade, nv:Number(p.nova_group)||0,
               ad:(p.additives_tags||[]).map(x=>x.replace(/^en:/,"")), bio:(p.labels_tags||[]).some(x=>ORGANIC.includes(x))?1:0};
       }else{
         p._src = base;
@@ -235,7 +239,7 @@ async function search(base, tag, food, brand){
       if(s==null) continue;
       seen.add(p.code); it.s = s; it._k = k; items.push(it);
     }
-    items.sort((x,y)=>y.s-x.s || (y.fk||0)-(x.fk||0) || x._k-y._k);
+    items.sort((x,y)=>(y.pr||0)-(x.pr||0) || y.s-x.s || (y.fk||0)-(x.fk||0) || x._k-y._k);
     items.forEach(it=>delete it._k);
     idx.fam[id] = {src:base, l:items.map(it=>[it.c, it.n, it.b, it.s, it.i||""])};
     console.log(id.padEnd(16), used.padEnd(34), String(prods.length).padStart(3), "lus,", String(items.length).padStart(3), "notés, meilleur", items[0]?items[0].s:"-", "| vendus en France", nFr, strict?"(filtre appliqué, "+outFr+" écartés)":"(filtre non appliqué)", "| nom hors famille", outName);

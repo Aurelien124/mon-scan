@@ -644,10 +644,10 @@ function topScore(it, src){
   return {s:a.score, k:a.offHits.length+a.lftHits.length};
 }
 // À note égale, le produit avec le moins de points signalés passe devant.
-// Puis les critères de la fiche famille (fk), puis le moins de points signalés.
+// Puis les critères de la fiche famille (fk), puis le moins de points signalés. pr : critère prioritaire (miels non pasteurisés) en tête.
 function topItems(f){
-  const l = f.p.map(it=>Object.assign({it}, topScore(it,f.src))).filter(o=>o.s!=null).sort((a,b)=>b.s-a.s || (b.it.fk||0)-(a.it.fk||0) || a.k-b.k);
-  l.forEach((o,i)=>{ o.rank = i && o.s===l[i-1].s && (o.it.fk||0)===(l[i-1].it.fk||0) ? l[i-1].rank : i+1; });
+  const l = f.p.map(it=>Object.assign({it}, topScore(it,f.src))).filter(o=>o.s!=null).sort((a,b)=>(b.it.pr||0)-(a.it.pr||0) || b.s-a.s || (b.it.fk||0)-(a.it.fk||0) || a.k-b.k);
+  l.forEach((o,i)=>{ o.rank = i && o.s===l[i-1].s && (o.it.pr||0)===(l[i-1].it.pr||0) && (o.it.fk||0)===(l[i-1].it.fk||0) ? l[i-1].rank : i+1; });
   return l;
 }
 function thumb(img){
@@ -655,8 +655,8 @@ function thumb(img){
   return `<span class="thumb">${im?`<img src="${esc(im)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">`:'<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 16l4-4 4 4 3-3 5 5"/></svg>'}</span>`;
 }
 const pillS = sc => `<span class="pill" style="background:${verdict(sc)[1]};width:40px;height:40px">${sc==null?"?":sc}</span>`;
-function prodBtn(code, name, brand, sc, img, rank){
-  return `<li><button type="button" data-alt="${esc(code)}">${rank?`<span class="rk">${rank}</span>`:""}${thumb(img)}<span><b>${esc(name)}</b><br><span class="muted small">${esc(brand||"")}</span></span>${pillS(sc)}</button></li>`;
+function prodBtn(code, name, brand, sc, img, rank, tag){
+  return `<li><button type="button" data-alt="${esc(code)}">${rank?`<span class="rk">${rank}</span>`:""}${thumb(img)}<span><b>${esc(name)}</b><br><span class="muted small">${esc(brand||"")}</span>${tag?` <span class="small" style="color:var(--good,#2e7d32)">· ${esc(tag)}</span>`:""}</span>${pillS(sc)}</button></li>`;
 }
 function altFamily(p, top){
   if(!top) return null;
@@ -842,7 +842,7 @@ $("#toplist").addEventListener("toggle", e=>{
   const d = e.target; if(!d.matches || !d.matches("details[data-f]") || !d.open) return;
   const f = TOP && TOP.fam.find(x=>x.id===d.dataset.f); if(!f) return;
   const list = topItems(f).slice(0,10);
-  d.querySelector(".topbody").innerHTML = list.length ? `${f.note?`<p class="small muted">${esc(f.note)}</p>`:""}${list.length>1&&list.every(o=>o.rank===1)?'<p class="small muted">Tous ex æquo : la note ne départage pas ces produits (voir la fiche de la famille dans Guides).</p>':""}<ul class="alts toplist">${list.map(o=>prodBtn(o.it.c,o.it.n,o.it.b,o.s,o.it.i,(list.filter(x=>x.rank===o.rank).length>1?"=":"")+o.rank)).join("")}</ul>` : '<p class="small muted">Pas assez de fiches complètes.</p>';
+  d.querySelector(".topbody").innerHTML = list.length ? `${f.note?`<p class="small muted">${esc(f.note)}</p>`:""}${list.length>1&&list.every(o=>o.rank===1)?'<p class="small muted">Tous ex æquo : la note ne départage pas ces produits (voir la fiche de la famille dans Guides).</p>':""}<ul class="alts toplist">${list.map(o=>prodBtn(o.it.c,o.it.n,o.it.b,o.s,o.it.i,(list.filter(x=>x.rank===o.rank).length>1?"=":"")+o.rank,o.it.pr?"non pasteurisé":"")).join("")}</ul>` : '<p class="small muted">Pas assez de fiches complètes.</p>';
 }, true);
 $("#toplist").addEventListener("click", e=>{
   const b = e.target.closest("[data-alt]"); if(!b) return;
